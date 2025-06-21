@@ -1,0 +1,216 @@
+/* Reset and base styles */
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  background-color: #f5f5f5;
+}
+
+/* Wrapper for advisor details */
+.meeting-wrapper {
+  position: relative;
+  padding: 40px 20px;
+  max-width: 1100px;
+  margin: 40px auto;
+}
+
+/* Advisor content box */
+.advisor-content {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: filter 0.3s ease;
+}
+
+.advisor-content.blurred {
+  filter: blur(5px);
+}
+
+/* Advisor details */
+.advisor-detail-box h2 {
+  color: #1e3a8a;
+  margin-bottom: 15px;
+}
+
+.advisor-detail-box p {
+  color: #444;
+  font-size: 0.95rem;
+  margin: 8px 0;
+}
+
+.review-stars {
+  color: #ffc107;
+  font-size: 1.2rem;
+  margin-top: 10px;
+}
+
+/* Schedule button */
+.schedule-button {
+  margin-top: 20px;
+  padding: 12px 24px;
+  background-color: #1e3a8a;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.schedule-button:hover {
+  background-color: #2749b0;
+}
+
+/* Modal overlay */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(2px);
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Modal box */
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  width: 320px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  z-index: 1001;
+}
+
+.modal-content h3 {
+  color: #1e3a8a;
+  margin-bottom: 20px;
+}
+
+.modal-content input[type="date"],
+.modal-content input[type="time"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+/* Modal buttons */
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.apply-btn, .cancel-btn {
+  padding: 10px;
+  flex: 1;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.apply-btn {
+  background-color: #1e3a8a;
+  color: white;
+}
+
+.apply-btn:hover {
+  background-color: #2749b0;
+}
+
+.cancel-btn {
+  background-color: #ccc;
+  color: #333;
+}
+
+.cancel-btn:hover {
+  background-color: #bbb;
+}
+
+/* Recommendation Swiper */
+.slider-wrapper {
+  width: 100vw; /* Full viewport width */
+  margin: 0;
+  padding: 40px 60px;
+  background-color: #fff;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  box-shadow: none;
+  box-sizing: border-box;
+}
+
+
+.slider-wrapper h2 {
+  color: #1e3a8a;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.advisor-swiper {
+  padding: 20px 0;
+}
+
+.advisor-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: left;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease;
+}
+
+.advisor-card:hover {
+  transform: translateY(-4px);
+}
+
+
+.advisor-card h3 {
+  color: #1e3a8a;
+  margin-bottom: 10px;
+}
+
+.advisor-card p {
+  margin: 6px 0;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+/* Swiper navigation buttons override */
+.swiper-button-next,
+.swiper-button-prev {
+  color: #1e3a8a;
+  font-weight: bold;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .advisor-content, .modal-content, .slider-wrapper {
+    width: 90%;
+    padding: 20px;
+  }
+
+  .modal-buttons {
+    flex-direction: column;
+  }
+
+  .apply-btn, .cancel-btn {
+    width: 100%;
+  }
+
+  .swiper-slide {
+    width: 90% !important;
+  }
+}

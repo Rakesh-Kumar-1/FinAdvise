@@ -1,0 +1,285 @@
+/* General Reset */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Poppins', sans-serif;
+  background-color: #f5f5f5;
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background-color: #1e3a8a;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+}
+
+/* Dropdown */
+.dropdown {
+  position: relative;
+}
+
+.advisor-name {
+  cursor: pointer;
+  padding: 10px 20px;
+  font-weight: 600;
+}
+
+.dropdown-content {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #fff;
+  color: #1e3a8a;
+  border-radius: 8px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  display: none;
+  flex-direction: column;
+  min-width: 180px;
+  z-index: 999;
+}
+
+.dropdown-content p, 
+.dropdown-content a {
+  padding: 12px 20px;
+  text-decoration: none;
+  color: #1e3a8a;
+  transition: background-color 0.3s;
+}
+
+.dropdown-content p:hover, 
+.dropdown-content a:hover {
+  background-color: #f0f0f0;
+}
+
+.dropdown:hover .dropdown-content {
+  display: flex;
+}
+
+/* Nav link */
+.nav-link {
+  margin-right: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.nav-link:hover {
+  opacity: 0.8;
+}
+
+.profile-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid white;
+}
+
+/* Main Advisor List */
+.advisor-list {
+  padding: 40px;
+  text-align: center;
+}
+
+.advisor-list h2 {
+  margin-bottom: 30px;
+  color: #1e3a8a;
+}
+
+/* Advisor Grid */
+.advisor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 30px;
+  margin-top: 30px;
+}
+
+/* Advisor Card (Product Card Style) */
+.advisor-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  padding: 20px;
+  text-align: left;
+}
+.search-section {
+  display: flex;
+  justify-content: center;
+  margin: 30px 0;
+}
+
+.search-bar {
+  width: 60%;
+  position: relative;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 12px 20px;
+  border: 1px solid #ddd;
+  border-radius: 30px;
+  font-size: 16px;
+  outline: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.search-bar input:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+  background-color: #fff;
+}
+
+
+.advisor-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.advisor-card h3 {
+  margin-top: 0;
+  font-size: 1.3rem;
+  color: #1e3a8a;
+}
+
+.advisor-card p {
+  font-size: 0.9rem;
+  color: #555;
+  margin: 8px 0;
+}
+
+.follow-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+}
+.follow-btn svg {
+  transition: transform 0.2s;
+}
+.follow-btn:hover svg {
+  transform: scale(1.2);
+}
+
+
+/* Book Now Button */
+.book-now {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: #1e3a8a;
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.book-now:hover {
+  background-color: #2749b0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .advisor-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.compose-window {
+  position: fixed;
+  bottom: 0;
+  right: 20px;
+  width: 500px;
+  height: 380px;
+  background-color: #fff;
+  border-radius: 10px 10px 0 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  font-family: "Roboto", sans-serif;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 1000;
+  border: 1px solid #ccc;
+}
+
+.compose-header {
+  background-color: #f2f6fc;
+  color: #202124;
+  padding: 10px 15px;
+  font-weight: 500;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  font-size: 10px;
+  cursor: pointer;
+  color: #5f6368;
+}
+
+.compose-inputs {
+  padding: 10px 15px;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.compose-inputs input {
+  border: none;
+  outline: none;
+  font-size: 14px;
+  padding: 6px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.compose-body {
+  flex: 1;
+  padding: 10px 15px;
+}
+
+.compose-body textarea {
+  width: 100%;
+  height: 100%;
+  border: none;
+  resize: none;
+  outline: none;
+  font-size: 14px;
+  font-family: "Roboto", sans-serif;
+}
+
+.compose-footer {
+  padding: 10px 15px;
+  border-top: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.send-btn {
+  background-color: #1a73e8;
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}

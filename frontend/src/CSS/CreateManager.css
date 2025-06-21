@@ -1,0 +1,129 @@
+:root {
+  --bg-color: #f5f6f7;
+  --container-bg: #ffffff;
+  --text-primary: #202124;
+  --text-secondary: #5f6368;
+  --border-color: #d1d5db;
+  --input-bg: #fafafa;
+  --input-border: #c4c9d4;
+  --input-focus-border: #3a86ff;
+  --button-bg: #3a86ff;
+  --button-hover-bg: #2f6fcc;
+  --button-text: #fff;
+}
+
+.manager-body {
+  background-color: var(--bg-color);
+  min-height: 100vh;
+  padding: 60px 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text-primary);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.manager-page {
+  background-color: var(--container-bg);
+  border-radius: 6px;
+  padding: 40px 48px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.form-title {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.form-subtitle {
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+}
+
+.manager-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.manager-form input[type="text"],
+.manager-form input[type="email"],
+.manager-form input[type="tel"],
+.manager-form input[type="url"],
+.manager-form input[type="file"],
+.manager-form textarea {
+  background-color: var(--input-bg);
+  border: 1.5px solid var(--input-border);
+  border-radius: 4px;
+  padding: 12px 14px;
+  font-size: 15px;
+  color: var(--text-primary);
+  transition: border-color 0.3s ease;
+  font-family: inherit;
+  outline-offset: 2px;
+}
+
+.manager-form input[type="text"]:focus,
+.manager-form input[type="email"]:focus,
+.manager-form input[type="tel"]:focus,
+.manager-form input[type="url"]:focus,
+.manager-form input[type="file"]:focus,
+.manager-form textarea:focus {
+  border-color: var(--input-focus-border);
+  outline: none;
+  background-color: #fff;
+}
+
+.manager-form textarea {
+  resize: vertical;
+  min-height: 90px;
+  line-height: 1.5;
+}
+
+.file-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.file-label {
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.submit-btn {
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  font-weight: 600;
+  font-size: 16px;
+  border: none;
+  padding: 14px 22px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: fit-content;
+  align-self: flex-start;
+  transition: background-color 0.25s ease;
+  box-shadow: 0 3px 6px rgba(58, 134, 255, 0.4);
+}
+
+.submit-btn:hover,
+.submit-btn:focus {
+  background-color: var(--button-hover-bg);
+  outline: none;
+  box-shadow: 0 6px 12px rgba(47, 111, 204, 0.6);
+}
+
+@media (max-width: 640px) {
+  .manager-page {
+    padding: 30px 20px;
+    width: 100%;
+  }
+}

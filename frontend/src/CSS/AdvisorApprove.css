@@ -1,0 +1,154 @@
+.advisor-approve-container {
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 0 20px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.advisor-approve-container h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 8px;
+  color: #222;
+}
+
+.advisor-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.advisor-card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 12px 16px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  width: 100%;
+}
+
+.advisor-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.header-cell {
+  font-size: 14px;
+  color: #333;
+  padding: 4px 8px;
+}
+
+.header-cell.index {
+  font-weight: 500;
+  min-width: 40px;
+}
+
+.header-cell.name {
+  flex: 1;
+  font-weight: 600;
+  min-width: 150px;
+}
+
+.header-cell.date,
+.header-cell.time {
+  min-width: 120px;
+  font-family: monospace;
+}
+
+.header-cell.buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.header-cell.buttons button {
+  background-color: #eee;
+  border: none;
+  padding: 6px 10px;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.header-cell.buttons button:hover {
+  background-color: #ccc;
+}
+
+.header-cell.buttons .accept-btn {
+  background-color: #0f9d58;
+  color: white;
+}
+
+.header-cell.buttons .reject-btn {
+  background-color: #d93025;
+  color: white;
+}
+
+.downdescription {
+  display: none;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #e0e0e0;
+  color: #444;
+  font-size: 14px;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.downdescription.show {
+  display: block;
+}
+
+.image-preview {
+  margin-top: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.image-preview a {
+  display: inline-block;
+  text-decoration: none;
+  background-color: #f1f1f1;
+  color: #333;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.image-preview a:hover {
+  background-color: #e0e0e0;
+  color: #000;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .advisor-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header-cell {
+    width: 100%;
+    margin-bottom: 5px;
+  }
+
+  .header-cell.buttons {
+    justify-content: flex-start;
+  }
+}

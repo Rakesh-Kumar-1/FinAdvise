@@ -1,0 +1,132 @@
+.manager-container {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+.manager-navbar {
+  background-color: #1e2a38; /* Preserved original dark theme */
+  padding: 12px 24px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.manager-nav-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.manager-nav-links button,
+.manager-nav-links a,
+.manager-dropdown span {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 16px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.manager-nav-links button:hover,
+.manager-nav-links a:hover,
+.manager-dropdown span:hover {
+  color: #00bcd4; /* Accent color on hover */
+}
+
+.manager-dropdown {
+  position: relative;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #fff;
+  min-width: 140px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  padding: 5px 0;
+  z-index: 1000;
+  flex-direction: column;
+}
+
+.manager-dropdown:hover .dropdown-menu {
+  display: flex;
+}
+
+.dropdown-menu li {
+  list-style: none;
+  padding: 8px 16px;
+}
+
+.dropdown-menu li a {
+  text-decoration: none;
+  color: #1e2a38;
+  font-weight: 500;
+}
+
+.dropdown-menu li a:hover {
+  background-color: #f0f0f0;
+  border-radius: 3px;
+}
+
+/* Content Styling */
+.manager-section {
+  padding: 30px 20px;
+}
+
+.manager-section h2 {
+  margin-bottom: 15px;
+  color: #1e2a38;
+}
+
+.manager-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.manager-card {
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.manager-card.inactive {
+  background-color: #f0f0f0;
+  opacity: 0.8;
+}
+
+.manager-card h3 {
+  margin-bottom: 10px;
+  color: #1e2a38;
+}
+
+.manager-card p {
+  margin: 4px 0;
+  color: #333;
+}
+
+.info-link {
+  display: inline-block;
+  margin-top: 10px;
+  color: #007acc;
+  text-decoration: underline;
+}
+
+.info-link:hover {
+  color: #005f99;
+}

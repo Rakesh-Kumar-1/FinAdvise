@@ -1,0 +1,52 @@
+/* Page Wrapper */
+.transcation-page {
+  padding: 30px;
+  background-color: #f9f9f9;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+/* Page Heading */
+.transcation-page h2 {
+  font-size: 24px;
+  margin-bottom: 25px;
+  color: #2c3e50;
+}
+
+/* Transaction Grid */
+.transcation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+/* Transaction Card */
+.transcation-card {
+  background-color: #ffffff;
+  padding: 20px 24px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.transcation-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.transcation-card h3 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: #34495e;
+}
+
+.transcation-card p {
+  margin: 6px 0;
+  color: #555;
+  font-size: 15px;
+}
+
+.transcation-card strong {
+  color: #333;
+}
