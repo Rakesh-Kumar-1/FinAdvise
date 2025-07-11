@@ -2,7 +2,8 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import { IoSend } from "react-icons/io5";
 import { useContext } from 'react';
-import {CounterContext} from '../Context/UserContext'
+import { UserContext } from '../Context/UserContext';
+import { useNavigate } from 'react-router-dom';
 
 const Advisorfront = () => {
     const [showComplainForm, setShowComplainForm] = useState(false);
@@ -11,7 +12,8 @@ const Advisorfront = () => {
     const [description, setDescription] = useState('');
     const [selectedDay, setSelectedDay] = useState('');
     const [selectedTimes, setSelectedTimes] = useState({});
-    const {position} = useContext(CounterContext);
+    const {position,setPosition} = useContext(UserContext);
+    const navigate = useNavigate();
 
     const hours = Array.from({ length: 12 }, (_, i) => `${i + 9}:00 ${i + 9 < 12 ? 'AM' : 'PM'}`);
 
@@ -37,7 +39,11 @@ const Advisorfront = () => {
         try{
             const res = await axios.post('http://localhost:8080/advisor/schedule',{selectedTimes,id})
             if(res.data.message === 'Successfull'){
+                setPosition(res.data.info);
                 alert('Availability saved successfully!');
+            }
+            else{
+                 alert('Fill the schedule again');
             }
         }catch(err){
             console.error(err);
@@ -80,7 +86,7 @@ const Advisorfront = () => {
                     </div>
 
                     <div className="admin-dropdown">
-                        <span className="admin-menu-title">Transaction</span>
+                        <span className="admin-menu-title" onClick={()=>navigate("/payment/transcation")}>Transaction</span>
                     </div>
 
                     <a className="admin-nav-link" href="mailto:official@example.com">Email</a>

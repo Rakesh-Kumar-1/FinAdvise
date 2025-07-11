@@ -8,6 +8,8 @@ import adminRoute from './routes/adminRoutes.js';
 import managerRoute from './routes/managerRoutes.js';
 import advisorRoute from './routes/advisorRoutes.js';
 import {fileURLToPath} from 'url';
+import { chat } from './routes/chat.js';
+import {records} from './routes/records.js'
 import path from 'path';
 
 dotenv.config({});
@@ -35,6 +37,8 @@ app.use('/user', userRoute);
 app.use('/admin',adminRoute );
 app.use('/manager',managerRoute);
 app.use('/advisor',advisorRoute);
+app.use('/chat', chat)
+app.use('/payment/records',records);
 
 // 🧠 Wrap startup logic
 app.listen(PORT, () => {

@@ -11,6 +11,7 @@ import bodyParser from "body-parser";
 import fs from 'fs';
 import { validateWebhookSignature } from 'razorpay/dist/utils/razorpay-utils.js';
 import { zoomService } from '../controllers/zoomPath.js';
+import { mail } from '../controllers/Mailsend.js';
 const router = express.Router();
 
 router.post('/register', register);  
@@ -19,8 +20,9 @@ router.get('/logout', logout);
 router.get('/fetch-advisor',fetchAdvisors)
 router.get('/advisor/:id',details)
 router.post('/complainForm',complainForm)
-router.post('/followrequest',followRequest)
+router.post('/followrequest',followRequest) 
 router.post('/zoom',zoomService)
+router.post('/sendmail',mail)
 
 //------------------multer------------------------------
 const __filename = fileURLToPath(import.meta.url);
@@ -98,103 +100,6 @@ router.post('/verify', upload.array('images', 5), async (req, res) => {
     message: "Account created successfully. It will take time to be approved by the organization.",
     success: true
   });
-});
-
-//------------------payment-----------------------------
-
-// Initialize Razorpay instance
-const razorpay = new Razorpay({
-  key_id: 'rzp_test_Y2wy8t1wD1AFaA',
-  key_secret: 'zSqRMpIa2ljBBpkieFYGmfLa',
-});
-
-// Helpers to manage orders.json
-const ordersFile = path.resolve('orders.json');
-
-const readData = () => {
-  if (fs.existsSync(ordersFile)) {
-    const data = fs.readFileSync(ordersFile);
-    return JSON.parse(data);
-  }
-  return [];
-};
-
-const writeData = (data) => {
-  fs.writeFileSync(ordersFile, JSON.stringify(data, null, 2));
-};
-
-// Initialize orders.json if it doesn't exist
-if (!fs.existsSync(ordersFile)) {
-  writeData([]);
-}
-
-// === Create Order ===
-router.post('/create-order', async (req, res) => {
-  try {
-    const { amount } = req.body;
-    console.log("amount : ",{amount});
-
-    const options = {
-      amount: amount, // ₹500.00 in paise
-      currency: 'INR',
-      receipt: "receipt_order_" + Date.now(),
-      notes: {
-        user: 'test user'
-      },
-    };
-
-    const order = await razorpay.orders.create(options);
-
-    const orders = readData();
-    orders.push({
-      order_id: order.id,
-      amount: order.amount,
-      currency: order.currency,
-      receipt: order.receipt,
-      status: 'created',
-    });
-    writeData(orders);
-
-    res.json(order);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error creating order');
-  }
-});
-
-// === Verify Payment ===
-router.post('/verify-payment', (req, res) => {
-  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-
-  const secret = razorpay.key_secret;
-  const body = `${razorpay_order_id}|${razorpay_payment_id}`;
-
-  try {
-    const isValidSignature = validateWebhookSignature(body, razorpay_signature, secret);
-
-    if (isValidSignature) {
-      const orders = readData();
-      const order = orders.find(o => o.order_id === razorpay_order_id);
-      if (order) {
-        order.status = 'paid';
-        order.payment_id = razorpay_payment_id;
-        writeData(orders);
-      }
-      res.status(200).json({ status: 'ok' });
-      console.log("Payment verification successful");
-    } else {
-      res.status(400).json({ status: 'verification_failed' });
-      console.log("Payment verification failed");
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ status: 'error', message: 'Error verifying payment' });
-  }
-});
-
-// === Payment Success Page (optional) ===
-router.get('/payment-success', (req, res) => {
-  res.redirect('http://localhost:5173/success'); // frontend route
 });
 
 

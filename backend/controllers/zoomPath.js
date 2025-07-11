@@ -8,9 +8,9 @@ app.use(express.json());
 app.use(cors());
 
 // Replace with your Zoom App Credentials
-const zoomAccountId = "YOUR_ZOOM_ACCOUNT_ID";
-const zoomClientId = "YOUR_ZOOM_CLIENT_ID";
-const zoomClientSecret = "YOUR_ZOOM_CLIENT_SECRET";
+const zoomAccountId = "vIoZvfQRTJysDikOqIkrFg";
+const zoomClientId = "v4x5NVd0QBWp_5uWJs_Rvg";
+const zoomClientSecret = "p14L8LFIH5SvkuxSlMOWXNqIlnjnYkty";
 
 // Auth Headers for Zoom OAuth
 const getAuthHeaders = () => ({
@@ -89,7 +89,7 @@ export const zoomService = async (req, res) => {
         const { date, time, participants } = req.body;
 
         if (!topic || !date || !time || !Array.isArray(participants) || participants.length !== 2) {
-            return res.status(400).json({ message: "Missing or invalid input" });
+            return res.status(200).json({status: false, message: "Missing or invalid input" });
         }
 
         const { join_url, meeting_id, start_time } = await createZoomMeeting({
@@ -99,10 +99,10 @@ export const zoomService = async (req, res) => {
             participants,
         });
 
-        return res.status(202).json({ info: { join_url, meeting_id, start_time }, messsgae: 'Zoom meeting created successfully' });
+        return res.status(200).json({ status: true , info: { join_url, meeting_id, start_time }, messsgae: 'Zoom meeting created successfully' });
     } catch (error) {
         console.error("❌ Meeting creation failed:", error);
-        res.status(500).json({ message: "Internal server error" });
+        res.status(500).json({ status: false ,message: "Internal server error" });
     }
 };
 

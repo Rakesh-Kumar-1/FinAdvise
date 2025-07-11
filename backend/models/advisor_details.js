@@ -59,7 +59,7 @@ const advisorDetailsSchema = new mongoose.Schema({
     required:true,
   },
   schedule: {
-    mondays: { type: [String], default: [] },
+    monday: { type: [String], default: [] },
     tuesday: { type: [String], default: [] },
     wednesday: { type: [String], default: [] },
     thursday: { type: [String], default: [] },

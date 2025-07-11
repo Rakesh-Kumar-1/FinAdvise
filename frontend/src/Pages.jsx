@@ -4,9 +4,6 @@ import Auth from './Pages/Auth'
 import Front from './Pages/User/Front'
 import Advisor from './Pages/User/Advisor'
 import JoinMeeting from './Pages/User/JoinMeeting'
-import AdvisorDetails from './Pages/Component/AdvisorDetails'
-import User_payments from './Pages/Component/User_payments'
-import Success from './Pages/Component/Success'
 import Adminlogin from './Pages/Admin/Adminlogin'
 import CreateManager from './Pages/Admin/Createmanager'
 import ManagerProfile from './Pages/Manager/ManagerProfile'
@@ -16,6 +13,10 @@ import Complain from './Pages/Manager/Complain'
 import Advisorfront from './Pages/Advisor/Advisorfront'
 import AdvisorApprove from './Pages/Manager/AdvisorApprove'
 import Test from './Test'
+import Setting from './Pages/Component/Setting'
+import  ChatBot  from './Pages/Component/Chatbot'
+import AdvisorDeta from './Pages/Component/AdvisorDeta'
+import { TranscationRecords } from './Pages/Component/TranscationRecords'
 // import {SocketProvider} from '../Component/Socket'
 // import Room from './Room'
 // import { PeerProvider } from '../Component/Peer'
@@ -32,9 +33,7 @@ const Pages = () => {
         <Route path='/front' element={<Front/>}/>
         <Route path ='/apply' element={<Advisor/>}/>
         <Route path="/join-meeting" element={<JoinMeeting/>} />
-        <Route path ="/advisorinfo/:id" element={<AdvisorDetails/>}/>
-        <Route path ='/payment' element={<User_payments/>}/>
-        <Route path = '/success' element={<Success/>}/>
+        <Route path ="/advisorinfo/:id" element={<AdvisorDeta/>}/>
         <Route path = '/admin' element={<Adminlogin/>}/>
         <Route path='/create-manager' element={<CreateManager/>}/>
         <Route path= '/manager' element={<ManagerProfile/>}/>
@@ -44,6 +43,9 @@ const Pages = () => {
         <Route path='/advisor' element={<Advisorfront/>}/>
         <Route path='/advisor-application' element={<AdvisorApprove/>}/>
         <Route path='/test' element={<Test/>}/>
+        <Route path='/setting' element={<Setting/>}/>
+        <Route path='/chatbot' element={<ChatBot/>}/>
+        <Route path='/payment/transcation' element={<TranscationRecords/>}/>
         {/*
         <Route path='/room/:roomId' element={<Room/>} />
         <Route path="/lobby" element={<join-meeting />} />

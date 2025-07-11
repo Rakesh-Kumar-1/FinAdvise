@@ -1,12 +1,3 @@
-import { createContext, useState } from "react";
+import { createContext } from "react";
 
-export const CounterContext = createContext(null);
-
-export const CounterProvider = (props) =>{
-    const[position,setPosition] = useState(null);
-    return (
-        <CounterContext.Provider value={{position,setPosition}}>
-            {props.children}
-        </CounterContext.Provider>
-    )
-}
+export const UserContext = createContext(null);

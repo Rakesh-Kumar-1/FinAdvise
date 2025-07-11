@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import { FaMeetup } from "react-icons/fa";
 import { useContext } from 'react';
-import { CounterContext } from './Context/UserContext';
+import { UserContext } from './Context/UserContext';
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ const Auth = () => {
     confirm: '',
     gender: 'male',
   });
-  const {setPosition} = useContext(CounterContext);
+  const {setPosition} = useContext(UserContext);
 
   const onChangeInput = (e) => {
     const { name, value } = e.target;

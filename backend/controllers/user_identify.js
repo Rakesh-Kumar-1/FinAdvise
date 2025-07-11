@@ -5,7 +5,7 @@ import path from "path";
 import { User } from "../models/user_module.js";
 import { Advisor } from "../models/advisor_details.js";
 import { Manager } from "../models/manager_details.js";
-import jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken';
 import { Complain } from "../models/complain_details.js";
 
 export const register = async (req, res) => {
@@ -49,43 +49,58 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        if (email === "admin@gmail.com" && password === "admin") {
-            return res.status(200).json({ message: "Login Sucessfully Admin", success: true });
-        }
+
         if (!email || !password) {
             return res.status(400).json({ message: "All fields are required", success: false });
         }
+
         const user = await User.findOne({ email });
         const manager = await Manager.findOne({ email });
-        if (!user && !manager) return res.status(400).json({ message: "Enter valid email or password", success: false });
+        const advisor = await Advisor.findOne({ email });
+
+        // Advisor login with default password
+        if (advisor && email === advisor.email && password === "manager0000") {
+            return res.status(200).json({ message: "Login Successfully Advisor", success: true, info: advisor });
+        }
+
+        // Admin login
+        if (email === "admin@gmail.com" && password === "admin") {
+            return res.status(200).json({ message: "Login Successfully Admin", success: true });
+        }
+
+        if (!user && !manager) {
+            return res.status(400).json({ message: "Enter valid email or password", success: false });
+        }
+
         const isPasswordMatch = user
             ? await bcrypt.compare(password, user.password)
             : await bcrypt.compare(password, manager.password);
 
-        if (!isPasswordMatch) return res.status(401).json({ message: "Incorrect email or password", success: false });
+        if (!isPasswordMatch) {
+            return res.status(401).json({ message: "Incorrect email or password", success: false });
+        }
 
         const tokenData = {
-            userId: user._id
-        }
-        // const token = await jwt.sign(tokenData,process.env.SECRET_KEY,{maxAge:1000*60*60, httpOnly:true, sameSite:'strict'})
+            userId: user ? user._id : manager._id
+        };
+
         const token = jwt.sign(tokenData, process.env.SECRET_KEY, { expiresIn: '1d' });
-        if (user) {
-            return res.status(200).cookie("token", token, { maxAge: 1 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'strict' }).json({
-                message: `Login Successfully User`,
-                info: user,
-                success: true
-            })
-        } else {
-            return res.status(200).cookie("token", token, { maxAge: 1 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'strict' }).json({
-                message: `Login Successfully Manager`,
-                info: manager,
-                success: true
-            })
-        }
+
+        return res.status(200).cookie("token", token, {
+            maxAge: 1 * 24 * 60 * 60 * 1000,
+            httpOnly: true,
+            sameSite: 'strict'
+        }).json({
+            message: user ? "Login Successfully User" : "Login Successfully Manager",
+            info: user || manager,
+            success: true
+        });
+
     } catch (error) {
-        console.log(error)
+        console.log("Login Error:", error);
+        return res.status(500).json({ message: "Internal Server Error", success: false });
     }
-}
+};
 export const logout = async (req, res) => {
     try {
         res.status(200).cookie('token', '', { maxAge: 0 }).json({
@@ -205,10 +220,20 @@ export const complainForm = async (req, res) => {
 }
 export const schedule = async (req, res) => {
     try {
-        const {selectedTimes,id} = req.body;
-        const advisor = await Advisor.findById(id);
-        advisor.schedule = selectedTimes;
-        await advisor.save();
+        const { selectedTimes, id } = req.body;
+        const advisor = await Advisor.findByIdAndUpdate(id,{
+        $set: {
+          'schedule.monday': selectedTimes.monday || [],
+          'schedule.tuesday': selectedTimes.tuesday || [],
+          'schedule.wednesday': selectedTimes.wednesday || [],
+          'schedule.thursday': selectedTimes.thursday || [],
+          'schedule.friday': selectedTimes.friday || [],
+          'schedule.saturday': selectedTimes.saturday || [],
+          'schedule.sunday': selectedTimes.sunday || [],
+        }
+      },
+      { new: true }
+    );
         return res.status(200).json({ status: true, message: 'Successfull' });
     } catch (err) {
         return res.status(500).json({ status: false, message: 'Server Error' });
@@ -216,8 +241,9 @@ export const schedule = async (req, res) => {
 }
 export const followRequest = async (req, res) => {
     try {
-        const { user, id } = req.body;
-
+        const user = req.body.user;
+        const id = req.body.id;
+        console.log(user, id);
         const followed = await User.findById(user);
         if (!followed) {
             return res.status(404).json({ status: false, message: 'User not found' });
@@ -245,8 +271,8 @@ export const approveAdvisor = async (req, res) => {
     try {
         const advisor = await Advisor.findById(req.params.id);
         if (!advisor) {
-            return res.status(500).json({ status: true , message: 'Advisor not found' })
-        }else{
+            return res.status(500).json({ status: true, message: 'Advisor not found' })
+        } else {
             advisor.permission = 'allow';
             await advisor.save();
             return res.status(200).json({ status: true, message: 'Advisor created successfully' });
@@ -262,13 +288,13 @@ export const disapproveAdvisor = async (req, res) => {
         const __dirname = path.dirname(__filename);
         const uploadDir = path.join(__dirname, '..', 'files');
         const advisor = await Advisor.findById(req.params.id);
-        
+
         // Check the folder exists or not
         const files = fs.readdirSync(uploadDir);
         //     
-        files.map((img,index)=>{
-            if(advisor.images.includes(img)){
-                const __imagename = path.join(uploadDir,img) 
+        files.map((img, index) => {
+            if (advisor.images.includes(img)) {
+                const __imagename = path.join(uploadDir, img)
                 fs.unlinkSync(__imagename);
             }
         })
@@ -285,3 +311,5 @@ export const disapproveAdvisor = async (req, res) => {
         return res.status(500).json({ status: false, message: 'Server error' });
     }
 };
+
+

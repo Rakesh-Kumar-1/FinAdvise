@@ -1,14 +1,14 @@
 import React from 'react'
 import {BrowserRouter as Router} from 'react-router-dom'
 import Pages from './Pages'
-import { CounterProvider } from './Pages/Context/UserContext'
+import { UserProvider } from './Pages/Context/UserProvider'
 
 const App = () => {
   return (
     <Router>
-      <CounterProvider>
+      <UserProvider>
         <Pages/>
-      </CounterProvider>
+      </UserProvider>
     </Router>
   )
 }

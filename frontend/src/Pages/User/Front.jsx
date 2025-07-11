@@ -3,9 +3,9 @@ import '../../CSS/Front.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { IoSend } from "react-icons/io5";
 import { FcLike } from "react-icons/fc";
-import { AiOutlineHeart } from "react-icons/ai"; // gray heart icon
+import { AiOutlineHeart } from "react-icons/ai";
 import axios from 'axios';
-import { CounterContext } from '../Context/UserContext';
+import { UserContext } from '../Context/UserContext';
 
 const Front = () => {
   const navigate = useNavigate();
@@ -17,7 +17,8 @@ const Front = () => {
   const [filter, setFilter] = useState([]);
   const [likePage, setLikePage] = useState(false);
   const [showComplainForm, setShowComplainForm] = useState(false);
-  const { position, setPosition } = useContext(CounterContext);
+  const { position, setPosition } = useContext(UserContext);
+  const [followedIds, setFollowedIds] = useState(new Set());
 
   useEffect(() => {
     const fetchAdvisors = async () => {
@@ -30,6 +31,12 @@ const Front = () => {
     };
     fetchAdvisors();
   }, []);
+
+  useEffect(() => {
+    if (position?.follows) {
+      setFollowedIds(new Set(position.follows));
+    }
+  }, [position]);
 
   const handleComplainClick = () => {
     setShowComplainForm(true);
@@ -47,11 +54,20 @@ const Front = () => {
   const followRequest = async (id) => {
     try {
       const user = position._id;
-      const res = await axios.post('http://localhost:8080/user/followrequest', {id, user});
+      const res = await axios.post('http://localhost:8080/user/followrequest', { id, user });
 
-      const message = res.data.message?.toLowerCase();
-      setPosition(prev => ({ ...prev, ...res.data.info }));
-      alert(`${message?.toUpperCase()} SUCCESSFULLY`);
+      if (res.data.status === true) {
+        setPosition(res.data.info); // update context
+        setFollowedIds(prev => {
+          const updated = new Set(prev);
+          if (updated.has(id)) {
+            updated.delete(id);
+          } else {
+            updated.add(id);
+          }
+          return updated;
+        });
+      }
     } catch (error) {
       console.log("Follow error:", error);
     }
@@ -84,14 +100,14 @@ const Front = () => {
     <div className="front-page">
       <nav className="navbar">
         <div className="nav-right">
+          <span className="nav-link" onClick={() => navigate(0)}>Home</span>
           <span className="advisor-name" onClick={() => navigate('/apply')}>Apply for Advisor</span>
           <span className="nav-link" onClick={() => navigate('/join-meeting')}>Join Meeting</span>
           <span className="nav-link" onClick={handleComplainClick}>Complain</span>
-          <span className="nav-link" onClick={() => setLikePage(prev => !prev)}>
+          <span className="nav-link" onClick={() => setLikePage(true)}>
             <img src='' alt='Like' />
           </span>
-
-          <img src={position?.image} alt="User Profile" className="profile-img" />
+          <img src={position?.image} alt="User Profile" className="profile-img" onClick={()=> navigate('/setting')}/>
         </div>
       </nav>
 
@@ -103,17 +119,25 @@ const Front = () => {
 
       <main className="advisor-list">
         <div className="advisor-grid">
-          {likePage === true ? (
+          {likePage ? (
             position?.follows?.length > 0 ? (
-              position.follows.map((id, index) => (
-                <p key={index}>Followed Advisor ID: {id}</p>
+              position.follows.map((item, index) => (
+                <div key={index} className="advisor-card">
+                  <h3>{item.name}</h3>
+                  <p><strong>Image:</strong><img src={item.image} alt={item.fullname} className="advisor-image" /></p>
+                  <p><strong>Bio:</strong> {item.bio}</p>
+                  <p><strong>Experience:</strong> {item.experience} years</p>
+                  <p><strong>Rating:</strong> {item.rating}</p>
+                  <p><strong>Clients:</strong> {item.clients}</p>
+                  <Link className="book-now" to={`/advisorinfo/${item._id}`}>Info</Link>
+                </div>
               ))
             ) : (
               <p>No followed advisors found.</p>
             )
           ) : (
             (search === '' ? advisors : filter).map((item, index) => {
-              const isFollowed = position?.follows?.includes(item._id);
+              const isFollowed = followedIds.has(item._id);
               return (
                 <div key={index} className="advisor-card">
                   <h3>{item.name}</h3>
@@ -136,7 +160,6 @@ const Front = () => {
           )}
         </div>
       </main>
-
 
       {showComplainForm && (
         <form className="compose-window" onSubmit={complainForm}>
