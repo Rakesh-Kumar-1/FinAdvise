@@ -7,6 +7,7 @@ import { Advisor } from "../models/advisor_details.js";
 import { Manager } from "../models/manager_details.js";
 import jwt from 'jsonwebtoken';
 import { Complain } from "../models/complain_details.js";
+import { PaymentRecords } from "../models/payments_records.js";
 
 export const register = async (req, res) => {
     try {
@@ -219,25 +220,53 @@ export const complainForm = async (req, res) => {
     }
 }
 export const schedule = async (req, res) => {
-    try {
-        const { selectedTimes, id } = req.body;
-        const advisor = await Advisor.findByIdAndUpdate(id,{
-        $set: {
-          'schedule.monday': selectedTimes.monday || [],
-          'schedule.tuesday': selectedTimes.tuesday || [],
-          'schedule.wednesday': selectedTimes.wednesday || [],
-          'schedule.thursday': selectedTimes.thursday || [],
-          'schedule.friday': selectedTimes.friday || [],
-          'schedule.saturday': selectedTimes.saturday || [],
-          'schedule.sunday': selectedTimes.sunday || [],
-        }
-      },
-      { new: true }
-    );
-        return res.status(200).json({ status: true, message: 'Successfull' });
-    } catch (err) {
-        return res.status(500).json({ status: false, message: 'Server Error' });
+    // try {
+    //     const { selectedTimes, id } = req.body;
+    //     const advisor = await Advisor.findByIdAndUpdate(id,{
+    //     $set: {
+    //       'schedule.monday': selectedTimes.monday || [],
+    //       'schedule.tuesday': selectedTimes.tuesday || [],
+    //       'schedule.wednesday': selectedTimes.wednesday || [],
+    //       'schedule.thursday': selectedTimes.thursday || [],
+    //       'schedule.friday': selectedTimes.friday || [],
+    //       'schedule.saturday': selectedTimes.saturday || [],
+    //       'schedule.sunday': selectedTimes.sunday || [],
+    //     }
+    //   },
+    //   { new: true }
+    // );
+    //     return res.status(200).json({ status: true, message: 'Successfull' });
+    // } catch (err) {
+    //     return res.status(500).json({ status: false, message: 'Server Error' });
+    // }
+    const { advisorId, schedule } = req.body;
+
+  try {
+    // Validate inputs
+    if (!advisorId || typeof schedule !== 'object') {
+      return res.status(400).json({ msg: 'Invalid advisorId or schedule data' });
     }
+
+    const advisor = await Advisor.findById(advisorId);
+    if (!advisor) return res.status(404).json({ msg: 'Advisor not found' });
+
+    // Filter out blocked slots from the new schedule
+    for (const day of Object.keys(schedule)) {
+      const validTimes = schedule[day].filter(time => {
+        return !advisor.tempBlockedSlots.some(
+          slot => slot.day === day && slot.time === time
+        );
+      });
+
+      advisor.schedule[day] = validTimes;
+    }
+
+    await advisor.save();
+    res.status(200).json({ msg: 'Schedule updated successfully', schedule: advisor.schedule });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Server error', error: err.message });
+  }
 }
 export const followRequest = async (req, res) => {
     try {
@@ -311,5 +340,47 @@ export const disapproveAdvisor = async (req, res) => {
         return res.status(500).json({ status: false, message: 'Server error' });
     }
 };
+export const new_schedule = async (req,res) => {
+    const { id,date,time,clientId,transactionId,price,method} = req.body;
+    try {
+        const advisor = await Advisor.findById(id);
+
+        if (!advisor) return res.status(404).json({ msg: 'Advisor not found' });
+        
+        //
+        await PaymentRecords.create({
+            transcationId: transactionId,
+            amount: price,
+            senderId:clientId,
+            recieverId:id,
+            payment_method: method,
+            day:date,
+            time:time
+        })
 
 
+        // Remove slot from schedule
+        advisor.schedule[day] = advisor.schedule[day].filter(t => t !== time);
+
+        // Add to temporary blocked slots
+        advisor.tempBlockedSlots.push({ day, time });
+
+        await advisor.save();
+        res.status(200).json({ msg: 'Slot booked' });
+    } catch (err) {
+        res.status(500).json({ msg: 'Error blocking slot', error: err.message });
+    }
+}
+export const bookdschedule = async(req,res) => {
+    const {id} = req.body;
+    try{
+        const booked = await Advisor.findById(id);
+        if(!booked){
+            return res.status(500).json({status:false});
+        }else{
+            return res.status(200).json({status:true, info:booked.tempBlockedSlots});
+        }
+    }catch(err){
+        return res.status(500).json({status:false});
+    }
+}

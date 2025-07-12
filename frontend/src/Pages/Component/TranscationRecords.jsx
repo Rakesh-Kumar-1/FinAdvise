@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useContext } from 'react'
 import { UserContext } from '../Context/UserContext'
 import axios from 'axios';
@@ -26,19 +26,32 @@ export const TranscationRecords = () => {
     <div>
       <p>{id}</p>
       <div>
-        {records != null ? (
-          records.map((item, index) => (
-            <>
-            <p key={index}>{item.transcationId}</p>
-            <p>{item.price}</p>
-            <p>{item.sender}</p>
-            <p>{item.date}</p>
-            </>
-          ))
-        ) : (
-          "No records found"
-        )}
-      </div>
+  {records && records.length > 0 ? (
+    <table border="1" cellPadding="10" cellSpacing="0" style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <thead>
+        <tr>
+          <th>Transaction ID</th>
+          <th>Price</th>
+          <th>Sender</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {records.map((item, index) => (
+          <tr key={index}>
+            <td>{item.transcationId}</td>
+            <td>{item.price}</td>
+            <td>{item.sender}</td>
+            <td>{item.date}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  ) : (
+    <p>No records found</p>
+  )}
+</div>
+
 
     </div>
   )

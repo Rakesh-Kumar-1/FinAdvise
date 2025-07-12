@@ -58,7 +58,7 @@ const advisorDetailsSchema = new mongoose.Schema({
     type: [String],
     required:true,
   },
-  schedule: {
+ schedule: {
     monday: { type: [String], default: [] },
     tuesday: { type: [String], default: [] },
     wednesday: { type: [String], default: [] },
@@ -66,8 +66,13 @@ const advisorDetailsSchema = new mongoose.Schema({
     friday: { type: [String], default: [] },
     saturday: { type: [String], default: [] },
     sunday: { type: [String], default: [] },
-  }
-  
+  },
+  tempBlockedSlots: [
+    {
+      day: String,      // e.g. 'monday'
+      time: String,     // e.g. '1:00 PM'
+    }
+  ] 
 }, {
   timestamps: true
 });

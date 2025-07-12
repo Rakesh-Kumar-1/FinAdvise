@@ -11,6 +11,7 @@ import { useContext } from 'react';
 import { UserContext } from '../Context/UserContext';
 import axios from 'axios';
 import PaymentGateway from '../Payment/PaymentGateway';
+import { useNavigate } from 'react-router-dom';
 
 const AdvisorDeta = () => {
 //  const [showModal, setShowModal] = useState(false);
@@ -18,11 +19,12 @@ const AdvisorDeta = () => {
   const [transactionId, setTransactionId] = useState('');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
-  // const [slotday, setSlotday] = useState('');
+  const [method, setMethod] = useState("");
   // const [slottime, setSlottime] = useState('');
   const { id } = useParams();
   const [advisor, setAdvisor] = useState(null);
   const [all, setAll] = useState({});
+  const navigate = useNavigate();
 
   const { position } = useContext(UserContext);
 
@@ -41,7 +43,6 @@ const AdvisorDeta = () => {
     fetchAdvisor();
   }, [id]);
 
-  if (!advisor) return <p>Loading...</p>;
   const slotchange =(day,time) =>{
     setDate(day);
     setTime(time)
@@ -55,56 +56,65 @@ const AdvisorDeta = () => {
     setShowPayment(true);
   };
 
-  const handlePaymentSuccess = (txnId) => {
+  const handlePaymentSuccess = async() => {
     // Store the transaction ID
+    const txnId = `TXN${Date.now().toString().slice(-8)}`;
     setTransactionId(txnId);
+    const clientId = position._id;
+    const price = advisor.price;
 
-    const participants = [advisor.email, position.email];
-    console.log(participants, transactionId);
+    //const participants = [advisor.email, position.email];
+    // console.log(participants,transactionId,date,time);
 
-    // try {
-    //   const zoom = await axios.post('http://localhost:8080/user/zoom', {
-    //     participants,
-    //     date,
-    //     time
-    //   });
+    try {
+      // const zoom = await axios.post('http://localhost:8080/user/zoom', {
+      //   participants,
+      //   date,
+      //   time
+      // });
 
-    //   if (zoom.data.status !== true) {
-    //     alert('Failed to create meeting');
-    //     return;
-    //   }
+      // if (zoom.data.status !== true) {
+      //   alert('Failed to create meeting');
+      //   return;
+      // }
 
-    //   const { join_url, meeting_id, start_time } = zoom.data.info;
+      // const { join_url, meeting_id, start_time } = zoom.data.info;
 
-    //   await new Promise(resolve => setTimeout(resolve, 2000));
+      // await new Promise(resolve => setTimeout(resolve, 2000));
 
-    //   const subject = "Meeting Confirmation - FinAdvise";
-    //   const text = `
-    //     Meeting Details:
-    //     - Join Link: ${join_url}
-    //     - Meeting ID: ${meeting_id}
-    //     - Date & Time: ${start_time}
-    //     - Transaction ID: ${txnId}
-    //     - Advisor: ${advisor.fullname}
+      // const subject = "Meeting Confirmation - FinAdvise";
+      // const text = `
+      //   Meeting Details:
+      //   - Join Link: ${join_url}
+      //   - Meeting ID: ${meeting_id}
+      //   - Date & Time: ${start_time}
+      //  - Transaction ID: ${transactionId}
+      //   - Advisor: ${advisor.fullname}
 
-    //     Thank you for choosing FinAdvise!
-    //   `;
-    //   const sendmail = await axios.post('http://localhost:8080/user/sendmail', {
-    //     participants,
-    //     subject,
-    //     text
-    //   });
+      //   Thank you for choosing FinAdvise!
+      // `;
+      // const sendmail = await axios.post('http://localhost:8080/user/sendmail', {
+      //   participants,
+      //   subject,
+      //   text
+      // });
 
-    //   if (sendmail.data.message === "send mail") {
-    //     alert(`Meeting scheduled successfully! Transaction ID: ${txnId}\nConfirmation email sent to both parties.`);
-    //   } else {
-    //     console.log(sendmail.data.message);
-    //     alert(`Meeting scheduled successfully! Transaction ID: ${txnId}\nNote: Email sending failed, but meeting is confirmed.`);
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    //   alert(`Error occurred while scheduling meeting. Transaction ID: ${txnId} - Please contact support.`);
-    // }
+      // if (sendmail.data.message === "send mail") {
+      //   alert(`Meeting scheduled successfully! Transaction ID: ${txnId}\nConfirmation email sent to both parties.`);
+      // } else {
+      //   console.log(sendmail.data.message);
+      //   alert(`Meeting scheduled successfully! Transaction ID: ${txnId}\nNote: Email sending failed, but meeting is confirmed.`);
+      // }
+      // await new Promise(resolve => setTimeout(resolve, 2000));
+      const new_schedule = await axios.post(`https://localhost:8080/advisor/new_schedule`,{id,date,time,clientId,transactionId,price,method});
+      if(new_schedule.data.msg === 'Slot booked'){
+        navigate(0);
+      }
+
+    } catch (error) {
+      console.log(error);
+      alert(`Error occurred while scheduling meeting. Transaction ID: ${txnId} - Please contact support.`);
+    }
 
     setShowPayment(false);
     setDate('');
@@ -112,15 +122,16 @@ const AdvisorDeta = () => {
     // Keep transaction ID for reference
   };
 
-  const handleBackToDateTime = () => {
-    setShowPayment(false);
-    setShowModal(true);
+  const handleBackToDateTime = (method) => {
+    setMethod(method)
+    // setShowPayment(false);
+    // // setShowModal(true);
   };
 
   return (
     <>
       <div className="meeting-wrapper">
-        <div className={`advisor-content ${(showModal || showPayment) ? 'blurred' : ''}`}>
+        <div className={`advisor-content ${( showPayment) ? 'blurred' : ''}`}>
           <div className="advisor-detail-box">
             <h2>{advisor.fullname}</h2>
             <p><strong>Experience:</strong> {advisor.experience}</p>
@@ -141,7 +152,7 @@ const AdvisorDeta = () => {
                   <li key={day}>
                     <strong>{day.charAt(0).toUpperCase() + day.slice(1)}:</strong>{" "}
                     {times.map((slot, index) => (
-                      <button key={index} onClick={slotchange()}>  {slot}  </button>
+                      <button key={index} onClick={()=>slotchange(day,slot)}>  {slot}  </button>
                     ))}
                   </li>
                 ) : null
@@ -231,6 +242,7 @@ const AdvisorDeta = () => {
             ))}
         </Swiper>
       </div>
+
     </>
   );
 };

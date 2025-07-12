@@ -19,6 +19,7 @@ const PORT = process.env.PORT || 8080;
 const app = express();
 
 // Middleware
+import './middleware/restoreSlots.js'
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());

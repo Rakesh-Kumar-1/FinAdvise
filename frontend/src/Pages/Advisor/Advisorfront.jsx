@@ -4,6 +4,7 @@ import { IoSend } from "react-icons/io5";
 import { useContext } from 'react';
 import { UserContext } from '../Context/UserContext';
 import { useNavigate } from 'react-router-dom';
+import { ScheduleBooked } from './ScheduleBooked';
 
 const Advisorfront = () => {
     const [showComplainForm, setShowComplainForm] = useState(false);
@@ -14,6 +15,7 @@ const Advisorfront = () => {
     const [selectedTimes, setSelectedTimes] = useState({});
     const {position,setPosition} = useContext(UserContext);
     const navigate = useNavigate();
+    const id = position._id;
 
     const hours = Array.from({ length: 12 }, (_, i) => `${i + 9}:00 ${i + 9 < 12 ? 'AM' : 'PM'}`);
 
@@ -33,9 +35,7 @@ const Advisorfront = () => {
         });
     };
 
-    const handleSaveAvailability = async() => {
-        console.log('Saved availability:', selectedTimes);
-        const id = position._id;
+    const handleSaveAvailability = async() => { 
         try{
             const res = await axios.post('http://localhost:8080/advisor/schedule',{selectedTimes,id})
             if(res.data.message === 'Successfull'){
@@ -43,7 +43,7 @@ const Advisorfront = () => {
                 alert('Availability saved successfully!');
             }
             else{
-                 alert('Fill the schedule again');
+                alert('Fill the schedule again');
             }
         }catch(err){
             console.error(err);
@@ -133,6 +133,7 @@ const Advisorfront = () => {
                         </div>
                     )}
                 </div>
+
             </section>
 
             {showComplainForm && (
@@ -173,6 +174,7 @@ const Advisorfront = () => {
                     </div>
                 </form>
             )}
+            <ScheduleBooked id={position._id}/>
         </div>
     );
 };

@@ -17,17 +17,12 @@ import Setting from './Pages/Component/Setting'
 import  ChatBot  from './Pages/Component/Chatbot'
 import AdvisorDeta from './Pages/Component/AdvisorDeta'
 import { TranscationRecords } from './Pages/Component/TranscationRecords'
-// import {SocketProvider} from '../Component/Socket'
-// import Room from './Room'
-// import { PeerProvider } from '../Component/Peer'
-// import LobbyScreen from "../screens/Lobby";
-// import RoomPage from "../screens/Room";
+import ChatbotButton from './Pages/Component/ChatbotButton'
 
 
 const Pages = () => {
   return (
-    // <SocketProvider>
-    //   <PeerProvider>
+    <>
       <Routes>
         <Route path='/' element={<Auth/>}/>
         <Route path='/front' element={<Front/>}/>
@@ -46,14 +41,10 @@ const Pages = () => {
         <Route path='/setting' element={<Setting/>}/>
         <Route path='/chatbot' element={<ChatBot/>}/>
         <Route path='/payment/transcation' element={<TranscationRecords/>}/>
-        {/*
-        <Route path='/room/:roomId' element={<Room/>} />
-        <Route path="/lobby" element={<join-meeting />} />
-        <Route path="/room/:roomId" element={<RoomPage />} /> */}
-
       </Routes>
-    //   </PeerProvider>
-    // </SocketProvider>
+      <ChatbotButton/>
+    </>
+
   )
 }
 

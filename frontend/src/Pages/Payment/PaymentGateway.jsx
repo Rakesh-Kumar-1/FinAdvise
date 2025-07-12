@@ -5,6 +5,7 @@ const PaymentGateway = ({ advisor, date, time, onPaymentSuccess, onBack,price })
   const [currentStep, setCurrentStep] = useState('methods'); // 'methods' | 'form' | 'success'
   const [selectedMethod, setSelectedMethod] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [transactionIdState, setTransactionId] = useState('');
   const [formData, setFormData] = useState({
     cardNumber: '',
     expiryDate: '',
@@ -57,26 +58,26 @@ const PaymentGateway = ({ advisor, date, time, onPaymentSuccess, onBack,price })
   const handlePaymentSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    // Generate transaction ID
+    const txnId = `TXN${Date.now().toString().slice(-8)}`;
+    
+    // Store transaction ID for success screen
+    setTransactionId(txnId);
 
     // Simulate payment processing
     await new Promise(resolve => setTimeout(resolve, 2000));
 
-    // Generate transaction ID
-    const txnId = `TXN${Date.now().toString().slice(-8)}`;
 
     setCurrentStep('success');
     setLoading(false);
 
-    // Store transaction ID for success screen
-    setTransactionId(txnId);
-
     // Automatically send transaction ID to AdvisorDetails and trigger meeting setup
     setTimeout(() => {
-      onPaymentSuccess(txnId);
-    }, 1000); // Small delay to show success screen briefly
+      onBack(selectedMethod);
+      onPaymentSuccess(transactionIdState);
+    }, 4000); // Small delay to show success screen briefly
   };
 
-  const [transactionIdState, setTransactionId] = useState('');
 
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);

@@ -21,8 +21,14 @@ const payment = new mongoose.Schema({
         type:String,
         default:"UPI"
     },
+    day:{
+        type:String
+    },
+    time:{
+        type:String
+    }
 },{
     timestamps:true
 });
 
-export const paymentrecords = mongoose.model("PaymentRecords",payment)
+export const PaymentRecords = mongoose.model("PaymentRecords",payment)
