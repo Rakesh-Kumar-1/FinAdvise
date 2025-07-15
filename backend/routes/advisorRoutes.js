@@ -6,7 +6,8 @@ const router = express.Router();
 router.post('/complainForm',complainForm)
 router.post('/schedule',schedule);
 router.post('/new_schedule',new_schedule);
-router.post('/bookdschedule',bookdschedule)
+router.get('/bookdschedule', bookdschedule);
+
 
 
 export default router;

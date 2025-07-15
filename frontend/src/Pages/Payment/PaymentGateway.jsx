@@ -73,9 +73,9 @@ const PaymentGateway = ({ advisor, date, time, onPaymentSuccess, onBack,price })
 
     // Automatically send transaction ID to AdvisorDetails and trigger meeting setup
     setTimeout(() => {
-      onBack(selectedMethod);
-      onPaymentSuccess(transactionIdState);
-    }, 4000); // Small delay to show success screen briefly
+    onBack(selectedMethod);                   // Send method to AdvisorDeta
+    onPaymentSuccess(txnId);                  // Send txnId to AdvisorDeta
+  }, 4000); // Small delay to show success screen briefly
   };
 
 
