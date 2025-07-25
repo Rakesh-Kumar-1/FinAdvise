@@ -72,10 +72,12 @@ const PaymentGateway = ({ advisor, date, time, onPaymentSuccess, onBack,price })
     setLoading(false);
 
     // Automatically send transaction ID to AdvisorDetails and trigger meeting setup
-    setTimeout(() => {
-    onBack(selectedMethod);                   // Send method to AdvisorDeta
-    onPaymentSuccess(txnId);                  // Send txnId to AdvisorDeta
-  }, 4000); // Small delay to show success screen briefly
+    setTimeout(() => {                  // Send method to AdvisorDeta
+    onPaymentSuccess({
+      transactionId: txnId,
+      method: selectedMethod?.name || 'UPI',
+    });                  // Send txnId to AdvisorDeta
+  }, 3000); // Small delay to show success screen briefly
   };
 
 

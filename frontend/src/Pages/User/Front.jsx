@@ -19,8 +19,7 @@ const Front = () => {
   const [showComplainForm, setShowComplainForm] = useState(false);
   const { position, setPosition } = useContext(UserContext);
   const [followedIds, setFollowedIds] = useState(new Set());
-
-  useEffect(() => {
+  useEffect(() => { 
     const fetchAdvisors = async () => {
       try {
         const response = await axios.get('http://localhost:8080/user/fetch-advisor');
@@ -31,17 +30,14 @@ const Front = () => {
     };
     fetchAdvisors();
   }, []);
-
   useEffect(() => {
     if (position?.follows) {
       setFollowedIds(new Set(position.follows));
     }
   }, [position]);
-
   const handleComplainClick = () => {
     setShowComplainForm(true);
   };
-
   const searchList = (e) => {
     const value = e.target.value;
     setSearch(value);
@@ -50,12 +46,10 @@ const Front = () => {
     );
     setFilter(newList);
   };
-
   const followRequest = async (id) => {
     try {
       const user = position._id;
       const res = await axios.post('http://localhost:8080/user/followrequest', { id, user });
-
       if (res.data.status === true) {
         setPosition(res.data.info); // update context
         setFollowedIds(prev => {
@@ -72,7 +66,6 @@ const Front = () => {
       console.log("Follow error:", error);
     }
   };
-
   const complainForm = async (e) => {
     e.preventDefault();
     try {
@@ -82,7 +75,6 @@ const Front = () => {
         description,
         role: 'user'
       });
-
       if (res.data.message === 'Successfull') {
         alert('Complain has been raised. It will be resolved within a few days.');
         setShowComplainForm(false);
@@ -95,7 +87,6 @@ const Front = () => {
       alert('Failed to raise complain.');
     }
   };
-
   return (
     <div className="front-page">
       <nav className="navbar">
@@ -104,19 +95,18 @@ const Front = () => {
           <span className="advisor-name" onClick={() => navigate('/apply')}>Apply for Advisor</span>
           <span className="nav-link" onClick={() => navigate('/join-meeting')}>Join Meeting</span>
           <span className="nav-link" onClick={handleComplainClick}>Complain</span>
+          <span className="nav-link" onClick={()=>navigate('/chatroom',{state:{positionId: position._id,source:'client'}})}>ChatRoom</span>
           <span className="nav-link" onClick={() => setLikePage(true)}>
             <img src='' alt='Like' />
           </span>
           <img src={position?.image} alt="User Profile" className="profile-img" onClick={()=> navigate('/setting')}/>
         </div>
       </nav>
-
       <main className="search-section">
         <div className="search-bar">
           <input type="text" placeholder="🔍 Search advisors by name..." value={search} onChange={searchList} />
         </div>
       </main>
-
       <main className="advisor-list">
         <div className="advisor-grid">
           {likePage ? (
@@ -160,14 +150,12 @@ const Front = () => {
           )}
         </div>
       </main>
-
       {showComplainForm && (
         <form className="compose-window" onSubmit={complainForm}>
           <div className="compose-header">
             <h2>NEW COMPLAINT</h2>
             <button type="button" className="close-btn" onClick={() => setShowComplainForm(false)}>×</button>
           </div>
-
           <div className="compose-inputs">
             <input
               type='email'
@@ -186,17 +174,11 @@ const Front = () => {
               required
             />
           </div>
-
           <div className="compose-body">
-            <textarea
-              placeholder='Write your complaint...'
-              name='description'
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+            <textarea placeholder='Write your complaint...' name='description' value={description} onChange={(e) => setDescription(e.target.value)}
               required
             />
           </div>
-
           <div className="compose-footer">
             <button type="submit" className="send-btn"><IoSend /></button>
           </div>

@@ -18,8 +18,7 @@ import  ChatBot  from './Pages/Component/Chatbot'
 import AdvisorDeta from './Pages/Component/AdvisorDeta'
 import { TranscationRecords } from './Pages/Component/TranscationRecords'
 import ChatbotButton from './Pages/Component/ChatbotButton'
-
-
+import { Room } from './Pages/Component/Room'
 const Pages = () => {
   return (
     <>
@@ -29,10 +28,10 @@ const Pages = () => {
         <Route path ='/apply' element={<Advisor/>}/>
         <Route path="/join-meeting" element={<JoinMeeting/>} />
         <Route path ="/advisorinfo/:id" element={<AdvisorDeta/>}/>
-        <Route path = '/admin' element={<Adminlogin/>}/>
+        <Route path= '/admin' element={<Adminlogin/>}/>
         <Route path='/create-manager' element={<CreateManager/>}/>
         <Route path= '/manager' element={<ManagerProfile/>}/>
-        <Route path ="/managerinfo/:id" element={<ManagerInfo/>}/>
+        <Route path="/managerinfo/:id" element={<ManagerInfo/>}/>
         <Route path='/transcation/:name' element={<Transcation/>}/>
         <Route path='/complain/:name' element={<Complain/>}/>
         <Route path='/advisor' element={<Advisorfront/>}/>
@@ -40,6 +39,7 @@ const Pages = () => {
         <Route path='/test' element={<Test/>}/>
         <Route path='/setting' element={<Setting/>}/>
         <Route path='/chatbot' element={<ChatBot/>}/>
+        <Route path='/chatroom' element={<Room/>}/>
         <Route path='/payment/transcation' element={<TranscationRecords/>}/>
       </Routes>
       <ChatbotButton/>

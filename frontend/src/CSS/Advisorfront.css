@@ -1,0 +1,209 @@
+/* Navbar Styles */
+.admin-navbar {
+  background-color: #343a40;
+  color: #fff;
+  padding: 15px 25px;
+  display: flex;
+  justify-content: flex-end;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.admin-nav-link, .admin-menu-title {
+  margin-left: 20px;
+  font-weight: 500;
+  cursor: pointer;
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.admin-nav-link:hover, .admin-menu-title:hover {
+  color: #FFC107;
+}
+
+/* Advisor Container */
+.advisor-container {
+  max-width: 960px;
+  margin: 30px auto;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.05);
+}
+
+.profile-pic {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 25px;
+}
+
+.profile-pic img {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 2px solid #007BFF;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Day & Time Selection */
+.weekly-schedule p {
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.days {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.day-btn {
+  padding: 10px 15px;
+  background-color: #e9ecef;
+  border: 1px solid #ccc;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.day-btn.active {
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+}
+
+.hours h4 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.hour-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.hour-slot {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background-color: white;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+}
+
+.save-btn {
+  display: block;
+  margin: 0 auto 20px;
+  padding: 10px 20px;
+  background-color: #28a745;
+  border: none;
+  color: white;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.save-btn:hover {
+  background-color: #218838;
+}
+
+/* Complaint Form */
+.compose-window {
+  position: fixed;
+  top: 60px;
+  right: 30px;
+  width: 340px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  padding: 20px;
+  z-index: 1000;
+}
+
+.compose-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.compose-header h2 {
+  font-size: 18px;
+  margin: 0;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #888;
+}
+
+.compose-inputs input {
+  width: 100%;
+  padding: 8px 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.compose-body textarea {
+  width: 100%;
+  height: 100px;
+  resize: none;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+}
+
+.compose-footer .send-btn {
+  background-color: #007bff;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+.send-btn:hover {
+  background-color: #0056b3;
+}
+
+/* ScheduleBooked Table */
+.schedule-table-wrapper {
+  max-width: 600px;
+  margin: 40px auto;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.schedule-table th,
+.schedule-table td {
+  border: 1px solid #dee2e6;
+  padding: 10px 15px;
+  text-align: center;
+}
+
+.schedule-table th {
+  background-color: #007BFF;
+  color: white;
+  font-weight: 500;
+}

@@ -2,11 +2,11 @@ import cron from 'node-cron';
 import moment from 'moment';
 import { Advisor } from '../models/advisor_details.js';
 
-// Runs every 5 minutes
+// Runs every 6 hours
 cron.schedule('0 */6 * * *', async () => {
   try {
-    const currentDay = moment().format('dddd').toLowerCase();
-    const currentTime = moment().format('h:mm A');
+    const currentDay = moment().format('dddd').toLowerCase();  // e.g. 'monday'
+    const currentTime = moment().format('h:mm A');              // e.g. '2:45 PM'
 
     const advisors = await Advisor.find({
       tempBlockedSlots: { $exists: true, $not: { $size: 0 } }
@@ -16,14 +16,19 @@ cron.schedule('0 */6 * * *', async () => {
       const stillBlocked = [];
 
       for (const slot of advisor.tempBlockedSlots) {
-        if (
-          slot.day === currentDay &&
-          moment(currentTime, 'h:mm A').isAfter(moment(slot.time, 'h:mm A'))
-        ) {
+        const slotTime = moment(slot.time, 'h:mm A');
+        const nowTime = moment(currentTime, 'h:mm A');
+
+        const isToday = slot.day === currentDay;
+        const isExpired = nowTime.isAfter(slotTime);
+
+        if (isToday && isExpired) {
+          // Restore the slot only if not already restored
           if (!advisor.schedule[slot.day].includes(slot.time)) {
             advisor.schedule[slot.day].push(slot.time);
           }
         } else {
+          // Keep it if it's not expired
           stillBlocked.push(slot);
         }
       }
@@ -37,4 +42,3 @@ cron.schedule('0 */6 * * *', async () => {
     console.error('❌ Auto-restore job failed:', error.message);
   }
 });
-

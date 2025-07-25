@@ -77,5 +77,4 @@ const advisorDetailsSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Export model
 export const Advisor = mongoose.model("Advisor", advisorDetailsSchema);

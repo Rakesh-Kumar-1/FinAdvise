@@ -23,6 +23,15 @@ const Test = () => {
     fetchAdvisors();
   }, []);
 
+  const result =async() =>{
+    try{
+      const roomId = await axios.get(`http://localhost:8080/chatroom/client/${clientId}`);
+      setAdvisor(roomId.data);
+    }catch(error){
+      console.log("sidebar failed",error)
+    }
+  }    
+  
   return (
     <div className="slider-wrapper">
       <Swiper

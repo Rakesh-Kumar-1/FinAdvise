@@ -8,6 +8,7 @@ import { Manager } from "../models/manager_details.js";
 import jwt from 'jsonwebtoken';
 import { Complain } from "../models/complain_details.js";
 import { PaymentRecords } from "../models/payments_records.js";
+import { ChatRoom } from "../models/chatroom.js";
 
 export const register = async (req, res) => {
     try {
@@ -323,41 +324,55 @@ export const disapproveAdvisor = async (req, res) => {
         return res.status(500).json({ status: false, message: 'Server error' });
     }
 };
-export const new_schedule = async (req, res) => {
+export const clientbill = async (req, res) => {
   const { id, date, time, clientId, transactionId, price, method } = req.body;
 
   try {
     const advisor = await Advisor.findById(id);
     if (!advisor) return res.status(404).json({ msg: 'Advisor not found' });
 
-    // Validate day and time slot
-    if (!advisor.schedule[date] || !advisor.schedule[date].includes(time)) {
-      return res.status(400).json({ msg: `Time slot not available on ${date}` });
+    const normalizedDay = date.toLowerCase();
+
+    if (!advisor.schedule[normalizedDay] || !advisor.schedule[normalizedDay].includes(time)) {
+      return res.status(400).json({ msg: `Time slot not available on ${normalizedDay}` });
     }
 
-    // Record the payment
-    await PaymentRecords.create({
-      transactionId, // ✅ spelling fixed
-      amount: price,
-      senderId: clientId,
-      recieverId: id,
-      payment_method: method,
-      day: date,
-      time: time,
-    });
+    // Record payment safely
+    try {
+      await PaymentRecords.create({
+        transactionId,
+        amount: price,
+        senderId: clientId,
+        recieverId: id,
+        payment_method: method,
+        day: normalizedDay,
+        time
+      });
+    } catch (err) {
+      console.error('❌ Payment record error:', err.message);
+      return res.status(500).json({ msg: 'Payment record error', error: err.message });
+    }
+    //chatroom  created
+    try {
+      const room = await ChatRoom.findOne({ clientId, advisorId: id });
+      if (!room) {
+        await ChatRoom.create({ clientId, advisorId: id, createdAt: new Date() });
+      }
+    } catch (error) {
+      console.error('❌ ChatRoom create error:', error.message);
+      return res.status(500).json({ msg: 'ChatRoom create error', error: error.message });
+    }
 
-    // Remove the time from schedule
-    advisor.schedule[date] = advisor.schedule[date].filter(t => t !== time);
-
-    // Temporarily block the slot
-    advisor.tempBlockedSlots.push({ day: date, time });
+    // Update schedule
+    advisor.schedule[normalizedDay] = advisor.schedule[normalizedDay].filter(t => t !== time);
+    advisor.tempBlockedSlots.push({ day: normalizedDay, time });
 
     await advisor.save();
 
     res.status(200).json({ msg: 'Slot booked' });
 
   } catch (err) {
-    console.error(err);
+    console.error('❌ Client bill error:', err.message);
     res.status(500).json({ msg: 'Error blocking slot', error: err.message });
   }
 };

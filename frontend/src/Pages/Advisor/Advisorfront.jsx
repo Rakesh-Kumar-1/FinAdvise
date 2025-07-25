@@ -4,6 +4,7 @@ import { IoSend } from "react-icons/io5";
 import { UserContext } from '../Context/UserContext';
 import { useNavigate } from 'react-router-dom';
 import { ScheduleBooked } from './ScheduleBooked';
+import '../../CSS/Advisorfront.css'
 
 const Advisorfront = () => {
   const [showComplainForm, setShowComplainForm] = useState(false);
@@ -81,6 +82,7 @@ const Advisorfront = () => {
           <button className="admin-nav-link">Profile</button>
           <span className="admin-menu-title" onClick={() => setShowComplainForm(true)}>Complain</span>
           <span className="admin-menu-title" onClick={() => navigate("/payment/transcation")}>Transaction</span>
+          <span className="nav-link" onClick={()=>navigate('/chatroom',{state:{positionId: position._id,source:'advisor'}})}>ChatRoom</span>
           <a className="admin-nav-link" href="mailto:official@example.com">Email</a>
         </div>
       </nav>

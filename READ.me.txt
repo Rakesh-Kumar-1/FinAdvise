@@ -1,0 +1,4 @@
+
+This project is a demo that showcases the call functionality of the main project. Some features, such as database connectivity and API calls, are currently disabled for demo purposes due to missing credentials.
+
+If you wish to run the full version of the project, please replace the credentials in the `.env` file with your own database connection details.

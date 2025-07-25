@@ -15,7 +15,7 @@ const ChatBot = () => {
 
     try {
       // Call backend
-      const res = await axios.post("http://localhost:8080/chat", {
+      const res = await axios.post("http://localhost:8080/chat/chatbot", {
         message: input,
       });
 
