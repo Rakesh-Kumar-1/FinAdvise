@@ -58,6 +58,16 @@ const advisorDetailsSchema = new mongoose.Schema({
     type: [String],
     required:true,
   },
+  profilePhoto: {
+    data: {
+      type: Buffer,
+      required: true      // Make profile photo mandatory
+    },
+    contentType: {
+      type: String,
+      required: true
+    }
+  },
  schedule: {
     monday: { type: [String], default: [] },
     tuesday: { type: [String], default: [] },

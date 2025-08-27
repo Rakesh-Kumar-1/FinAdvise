@@ -32,6 +32,7 @@ export const ScheduleBooked = ({ id }) => {
             <tr>
               <th>Day</th>
               <th>Time</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -39,6 +40,7 @@ export const ScheduleBooked = ({ id }) => {
               <tr key={index}>
                 <td>{slot.day.charAt(0).toUpperCase() + slot.day.slice(1)}</td>
                 <td>{slot.time}</td>
+                <td>{}</td>
               </tr>
             ))}
           </tbody>

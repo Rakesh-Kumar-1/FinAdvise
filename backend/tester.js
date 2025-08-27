@@ -21,6 +21,47 @@
 // // Middleware
 // import './middleware/restoreSlots.js'
 
+//   const connectedUsers = new Map();  // Global use Map
+// io.on('connect', (socket) => {
+//   console.log('🟢 New client connected:', socket.id);
+
+//   // 1️⃣ Identify user on connect
+//   socket.on('identify', ({ userId }) => {
+//     connectedUsers.set(userId, socket.id);
+//     console.log(`✅ User ${userId} identified with socket ${socket.id}`);
+//   });
+
+//   socket.emit('recieveMessage',());
+
+//   // 3️⃣ Send message (receiver may or may not be online)
+//   socket.on('send_message', (message) => {
+//     const { chatRoomId, receiverId } = message;
+
+//     // Emit to room for real-time update
+//     io.to(chatRoomId).emit('receiveMessage', message);
+
+//     // If receiver is online (for future notification use)
+//     const receiverSocket = connectedUsers.get(receiverId);
+//     if (receiverSocket) {
+//       console.log(`📡 Message delivered to receiver ${receiverId}`);
+//     } else {
+//       console.log(`📭 Receiver ${receiverId} offline. Message stored in DB.`);
+//       // 🔔 Optionally trigger push/email/notification
+//     }
+//   });
+
+//   // 4️⃣ Cleanup on disconnect
+//   socket.on('disconnect', () => {
+//     for (let [userId, sockId] of connectedUsers.entries()) {
+//       if (sockId === socket.id) {
+//         connectedUsers.delete(userId);
+//         console.log(`🔴 User ${userId} disconnected`);
+//         break;
+//       }
+//     }
+//   });
+// });
+
 // app.use(express.urlencoded({ extended: true }));
 // app.use(express.json());
 // app.use(cookieParser());

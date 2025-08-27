@@ -10,61 +10,73 @@ export const Room = () => {
   const [messages, setMessages] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
   const [newMessage, setNewMessage] = useState("");
+
   const location = useLocation();
   const { positionId, source } = location.state || {};
 
-  const socket = useRef();
+  const socket = useRef(null);
 
-  // 👉 Connect to socket on mount
+  // 🔌 Connect socket and manage message listener
   useEffect(() => {
-    socket.current = io(SOCKET_SERVER_URL);
+    const socketInstance = io(SOCKET_SERVER_URL);
+    socket.current = socketInstance;
 
-    socket.current.on("connect", () => {
-      console.log("Connected to socket.io server");
-    });
-
-    // Receive message from socket
-    socket.current.on("receiveMessage", (message) => {
+    const handleReceiveMessage = (message) => {
       setMessages((prevMessages) => [...prevMessages, message]);
+    };
+
+    socketInstance.on("connect", () => {
+    console.log("✅ Connected to socket.io server");
+    socketInstance.emit("identify", { userId: positionId }); // Add this line
     });
+
+    socketInstance.on("receiveMessage", handleReceiveMessage);
 
     return () => {
-      socket.current.disconnect();
+      socketInstance.off("receiveMessage", handleReceiveMessage);
+      socketInstance.disconnect();
+      console.log("🛑 Disconnected from socket");
     };
   }, []);
 
-  const fetchChatRooms = async () => {
-    try {
-//    const response = await axios.get(`http://localhost:8080/chat/chatroom/${id}`);
-      const response = await axios.get(`http://localhost:8080/chat/chatroom?id=${positionId}&source=${source}`);
+  // 📡 Fetch chat rooms on user change
+  useEffect(() => {
+    const fetchChatRooms = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/chat/chatroom?id=${positionId}&source=${source}`
+        );
+        setPartner(response.data);
+        setMessages([]);
+        setSelectedChat(null);
+      } catch (error) {
+        console.error("Sidebar load failed:", error);
+      }
+    };
 
-      setPartner(response.data);
-    } catch (error) {
-      console.error("Sidebar load failed:", error);
+    if (positionId && source) {
+      fetchChatRooms();
     }
-  };
+  }, []);
 
-  const fetchMessages = async (chatRoomId) => {
+  // 📨 Fetch messages when chat selected
+  const onSelectChat = async (chatRoomId, partnerId) => {
     try {
       const res = await axios.get(`http://localhost:8080/chat/messages/${chatRoomId}`);
       setMessages(res.data);
+      setSelectedChat({ chatRoomId, partnerId });
+
+      socket.current.emit("join_room", {
+      chatRoomId,
+      userId: positionId,
+    });
+
     } catch (err) {
       console.error("Failed to fetch messages:", err);
     }
   };
 
-  useEffect(() => {
-    fetchChatRooms();
-  }, [positionId]);
-
-  const onSelectChat = async (chatRoomId, partnerId) => {
-    await fetchMessages(chatRoomId);
-    setSelectedChat({ chatRoomId, partnerId });
-
-    // 👉 Join socket room
-    socket.current.emit("join_room", chatRoomId);
-  };
-
+  // ✉️ Send message
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
 
@@ -74,17 +86,12 @@ export const Room = () => {
       chatRoomId,
       senderId: positionId,
       receiverId: partnerId,
-      text: newMessage
+      text: newMessage,
     };
 
     try {
-      // 1️⃣ Save to database
-      await axios.post("http://localhost:8080/chat/messages", messageData);
-
-      // 2️⃣ Emit via socket
+      await axios.post("http://localhost:8080/chat/sendmessages", messageData);
       socket.current.emit("send_message", messageData);
-
-      // 3️⃣ Add to current view
       setMessages((prev) => [...prev, messageData]);
       setNewMessage("");
     } catch (error) {
@@ -129,7 +136,7 @@ export const Room = () => {
             padding: "1rem",
             marginBottom: "1rem",
             overflowY: "auto",
-            backgroundColor: "#f9f9f9"
+            backgroundColor: "#f9f9f9",
           }}
         >
           {messages.length === 0 ? (
@@ -140,7 +147,7 @@ export const Room = () => {
                 key={idx}
                 style={{
                   textAlign: msg.senderId === positionId ? "left" : "right",
-                  marginBottom: "10px"
+                  marginBottom: "10px",
                 }}
               >
                 <span

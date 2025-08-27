@@ -1,13 +1,5 @@
-/* Global Reset */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Arial", sans-serif;
-}
-
-/* Container */
-.meet-container {
+/* JoinMeeting Component Scoped Styles */
+.joinmeeting-container {
     background-color: #f9f9f9;
     text-align: left;
     padding: 30px 50px;
@@ -17,8 +9,7 @@
     flex-direction: column;
 }
 
-/* Header Section */
-.meet-header {
+.joinmeeting-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -26,7 +17,7 @@
     border-bottom: 2px solid #e0e0e0;
 }
 
-.logo {
+.joinmeeting-logo {
     display: flex;
     align-items: center;
     font-size: 24px;
@@ -34,12 +25,12 @@
     color: #1a73e8;
 }
 
-.logo-icon {
+.joinmeeting-logo-icon {
     font-size: 28px;
     margin-right: 8px;
 }
 
-.header-options {
+.joinmeeting-header-options {
     display: flex;
     align-items: center;
     gap: 20px;
@@ -47,17 +38,17 @@
     color: #555;
 }
 
-.icon {
+.joinmeeting-icon {
     font-size: 22px;
     cursor: pointer;
     transition: transform 0.3s ease-in-out;
 }
 
-.icon:hover {
+.joinmeeting-icon:hover {
     transform: scale(1.1);
 }
 
-.profile-circle {
+.joinmeeting-profile-circle {
     background-color: #1a73e8;
     color: white;
     width: 35px;
@@ -70,33 +61,31 @@
     font-size: 16px;
 }
 
-/* Main Content Section */
-.meet-content {
+.joinmeeting-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-top: 50px;
 }
 
-/* Left Section */
-.meet-left {
+.joinmeeting-left {
     max-width: 50%;
 }
 
-.meet-left h1 {
+.joinmeeting-left h1 {
     font-size: 36px;
     font-weight: bold;
     color: #333;
     line-height: 1.2;
 }
 
-.meet-left p {
+.joinmeeting-left p {
     font-size: 18px;
     margin-top: 10px;
     color: #666;
 }
 
-.meet-actions {
+.joinmeeting-actions {
     margin-top: 25px;
     display: flex;
     align-items: center;
@@ -104,8 +93,7 @@
     flex-wrap: wrap;
 }
 
-/* Start a Meeting Button */
-.new-meeting {
+.joinmeeting-new-meeting {
     background-color: #1a73e8;
     color: white;
     border: none;
@@ -117,31 +105,30 @@
     justify-content: center;
     font-size: 16px;
     font-weight: bold;
-    text-decoration: none; /* Removes underline from <Link> */
-    height: 48px; /* Matches join button */
+    text-decoration: none;
+    height: 48px;
     transition: background-color 0.3s, transform 0.2s ease-in-out;
 }
 
-.new-meeting .btn-icon {
+.joinmeeting-new-meeting .btn-icon {
     font-size: 20px;
     margin-right: 8px;
     display: flex;
     align-items: center;
 }
 
-.new-meeting:hover {
+.joinmeeting-new-meeting:hover {
     background-color: #155ab6;
     transform: scale(1.02);
 }
 
-/* Join Meeting Section */
-.join-section {
+.joinmeeting-join-section {
     display: flex;
     gap: 10px;
     align-items: center;
 }
 
-.join-section input {
+.joinmeeting-join-section input {
     padding: 12px;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -149,7 +136,7 @@
     font-size: 16px;
 }
 
-.join-button {
+.joinmeeting-join-button {
     background-color: #1a73e8;
     color: white;
     border: none;
@@ -162,12 +149,12 @@
     transition: background-color 0.3s, transform 0.2s ease-in-out;
 }
 
-.join-button:hover {
+.joinmeeting-join-button:hover {
     background-color: #155ab6;
     transform: scale(1.02);
 }
 
-.meet-left a {
+.joinmeeting-left a {
     display: block;
     margin-top: 20px;
     color: #1a73e8;
@@ -175,67 +162,59 @@
     font-size: 16px;
 }
 
-.meet-left a:hover {
+.joinmeeting-left a:hover {
     text-decoration: underline;
 }
 
-/* Right Section */
-.meet-right {
+.joinmeeting-right {
     text-align: center;
     max-width: 45%;
 }
 
-.meet-right img {
+.joinmeeting-right img {
     width: 280px;
     filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.2));
 }
 
-.meet-right p {
+.joinmeeting-right p {
     font-size: 22px;
     font-weight: bold;
     margin-top: 15px;
     color: #333;
 }
 
-.meet-right span {
+.joinmeeting-right span {
     font-size: 16px;
     color: #555;
     display: block;
     margin-top: 5px;
 }
 
-/* Responsive Design */
 @media (max-width: 900px) {
-    .meet-content {
+    .joinmeeting-content {
         flex-direction: column;
         align-items: center;
         text-align: center;
     }
-
-    .meet-left {
+    .joinmeeting-left {
         max-width: 100%;
         margin-bottom: 40px;
     }
-
-    .meet-right {
+    .joinmeeting-right {
         max-width: 100%;
     }
-
-    .meet-right img {
+    .joinmeeting-right img {
         width: 220px;
     }
-
-    .join-section {
+    .joinmeeting-join-section {
         flex-direction: column;
         align-items: stretch;
         gap: 10px;
     }
-
-    .join-section input {
+    .joinmeeting-join-section input {
         width: 100%;
     }
-
-    .meet-actions {
+    .joinmeeting-actions {
         justify-content: center;
     }
 }

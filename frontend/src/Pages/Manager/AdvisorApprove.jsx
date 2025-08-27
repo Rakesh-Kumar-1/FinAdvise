@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { FaArrowCircleUp, FaArrowCircleDown } from "react-icons/fa";
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '../../CSS/AdvisorApprove.css';
@@ -49,6 +49,30 @@ const AdvisorApprove = () => {
     }
   };
 
+  const getProfilePhotoSrc = useMemo(() => {
+    return (profilePhoto) => {
+      if (!profilePhoto || !profilePhoto.data) return null;
+      
+      try {
+        // Handle both Buffer and base64 string data
+        let base64Image;
+        if (typeof profilePhoto.data === 'string') {
+          base64Image = profilePhoto.data;
+        } else if (profilePhoto.data.type === 'Buffer') {
+          base64Image = btoa(String.fromCharCode(...profilePhoto.data.data));
+        } else {
+          base64Image = profilePhoto.data.toString('base64');
+        }
+        
+        const contentType = profilePhoto.contentType || 'image/jpeg';
+        return `data:${contentType};base64,${base64Image}`;
+      } catch (error) {
+        console.error("Error converting profile photo:", error);
+        return null;
+      }
+    };
+  }, []);
+
   return (
     <div className="advisor-approve-container">
       <h2>Advisors Awaiting Approval</h2>
@@ -93,14 +117,30 @@ const AdvisorApprove = () => {
                   <p><strong>LinkedIn:</strong> {item.linkedIn}</p>
                   <p><strong>Experience:</strong> {item.experience} years</p>
                   <div>
+                    <label>Certificates</label>
                     {item.images.map((img, i) => (
                       <div key={i} style={{ marginBottom: '15px' }}>
                         <a href={`http://localhost:8080/files/${img}`} target="_blank" rel="noopener noreferrer">
-                          📄 View PDF
+                          📄 View 
                         </a>
                       </div>
                     ))}
                   </div>
+                  <div className="profile-photo-container">
+                      {item.profilePhoto ? (
+                        <img
+                          src={getProfilePhotoSrc(item.profilePhoto)}
+                          alt={`${item.fullname}'s profile`}
+                          className="profile-photo"
+                          onError={(e) => {
+                            console.error("Error loading profile photo");
+                            e.target.src = '/placeholder-avatar.png'; // Add a placeholder
+                          }}
+                        />
+                      ) : (
+                        <div className="no-photo">No profile photo available</div>
+                      )}
+                    </div>
                 </div>
               )}
             </div>

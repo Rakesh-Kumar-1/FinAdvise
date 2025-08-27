@@ -1,33 +1,44 @@
+/* ---------- Container ---------- */
 .advisor-approve-container {
   max-width: 1200px;
-  margin: 30px auto;
+  margin: 40px auto;
   padding: 0 20px;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  color: #2c2c2c;
 }
 
 .advisor-approve-container h2 {
-  font-size: 24px;
-  margin-bottom: 20px;
-  border-bottom: 2px solid #ccc;
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #e5e7eb;
   padding-bottom: 8px;
-  color: #222;
+  color: #1a1a1a;
 }
 
+/* ---------- Grid ---------- */
 .advisor-grid {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
 }
 
+/* ---------- Advisor Card ---------- */
 .advisor-card {
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 12px 16px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
-  width: 100%;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.advisor-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+}
+
+/* ---------- Header Row ---------- */
 .advisor-header-row {
   display: flex;
   align-items: center;
@@ -37,98 +48,135 @@
 }
 
 .header-cell {
-  font-size: 14px;
-  color: #333;
+  font-size: 15px;
   padding: 4px 8px;
+  color: #374151;
 }
 
 .header-cell.index {
-  font-weight: 500;
-  min-width: 40px;
+  font-weight: 600;
+  min-width: 36px;
+  color: #6b7280;
 }
 
 .header-cell.name {
   flex: 1;
   font-weight: 600;
-  min-width: 150px;
+  font-size: 16px;
+  color: #111827;
 }
 
 .header-cell.date,
 .header-cell.time {
-  min-width: 120px;
-  font-family: monospace;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  color: #4b5563;
 }
 
 .header-cell.buttons {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
+/* ---------- Buttons ---------- */
 .header-cell.buttons button {
-  background-color: #eee;
-  border: none;
-  padding: 6px 10px;
-  font-size: 16px;
-  border-radius: 6px;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #374151;
 }
 
 .header-cell.buttons button:hover {
-  background-color: #ccc;
+  background-color: #f3f4f6;
+  border-color: #d1d5db;
 }
 
 .header-cell.buttons .accept-btn {
-  background-color: #0f9d58;
-  color: white;
+  background-color: #10b981;
+  border: none;
+  color: #fff;
+  font-weight: 500;
+}
+
+.header-cell.buttons .accept-btn:hover {
+  background-color: #059669;
 }
 
 .header-cell.buttons .reject-btn {
-  background-color: #d93025;
-  color: white;
+  background-color: #ef4444;
+  border: none;
+  color: #fff;
+  font-weight: 500;
 }
 
+.header-cell.buttons .reject-btn:hover {
+  background-color: #dc2626;
+}
+
+/* ---------- Down Description ---------- */
 .downdescription {
-  display: none;
-  margin-top: 12px;
-  padding-top: 10px;
-  border-top: 1px solid #e0e0e0;
-  color: #444;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #e5e7eb;
   font-size: 14px;
-  animation: fadeIn 0.3s ease forwards;
+  color: #374151;
+  animation: slideDown 0.3s ease forwards;
 }
 
-.downdescription.show {
-  display: block;
+.downdescription p {
+  margin: 4px 0;
+  line-height: 1.4;
 }
 
-.image-preview {
-  margin-top: 15px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-}
-
-.image-preview a {
-  display: inline-block;
+.downdescription a {
   text-decoration: none;
-  background-color: #f1f1f1;
-  color: #333;
-  padding: 6px 12px;
-  border-radius: 6px;
-  transition: all 0.3s ease;
+  font-weight: 500;
+  color: #2563eb;
+  transition: color 0.2s ease;
 }
 
-.image-preview a:hover {
-  background-color: #e0e0e0;
-  color: #000;
+.downdescription a:hover {
+  color: #1d4ed8;
 }
 
-@keyframes fadeIn {
+/* ---------- Profile Photo ---------- */
+.profile-photo-container {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.profile-photo {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 2px solid #e5e7eb;
+  object-fit: cover;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.no-photo {
+  padding: 8px 14px;
+  font-size: 13px;
+  color: #6b7280;
+  background-color: #f3f4f6;
+  border-radius: 8px;
+}
+
+/* ---------- Animations ---------- */
+@keyframes slideDown {
   from {
     opacity: 0;
-    transform: translateY(-4px);
+    transform: translateY(-6px);
   }
   to {
     opacity: 1;
@@ -136,7 +184,7 @@
   }
 }
 
-/* Mobile responsiveness */
+/* ---------- Mobile ---------- */
 @media (max-width: 768px) {
   .advisor-header-row {
     flex-direction: column;
@@ -145,10 +193,16 @@
 
   .header-cell {
     width: 100%;
-    margin-bottom: 5px;
+    margin-bottom: 6px;
   }
 
   .header-cell.buttons {
     justify-content: flex-start;
+    width: 100%;
+  }
+
+  .profile-photo {
+    width: 70px;
+    height: 70px;
   }
 }

@@ -1,13 +1,16 @@
 import express from 'express';
-import { chat, chatrsidebar, getMessagesByRoom, sendMessage } from '../controllers/chat.js';
+import { chat, chatsidebar, getMessagesByRoom, sendMessage } from '../controllers/chat.js';
 
 const router = express.Router();
 
 router.post('/chatbot',chat);
 // router.get('/chatroom/:id',chatrsidebar);
-router.get('/chatroom',chatrsidebar)
+router.get('/chatroom',chatsidebar)
 router.get('/messages/:chatRoomId',getMessagesByRoom);
-router.post("/messages", sendMessage);
+router.post("/sendmessages", sendMessage);
+
+// Route to get all rooms for a user
+// router.get("/room/:userId", getUserRooms);
 
 
 export default router;

@@ -35,7 +35,7 @@ const AdvisorDeta = () => {
       ]);
       
       setAdvisor(advisorRes.data?.data || advisorRes.data);
-      setAllAdvisors(allAdvisorsRes.data.data);
+      setAllAdvisors(allAdvisorsRes.data.info);
     } catch (err) {
       setError('Failed to fetch advisor details');
       console.error('Failed to fetch advisor:', err);

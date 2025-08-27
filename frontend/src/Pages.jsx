@@ -19,11 +19,14 @@ import AdvisorDeta from './Pages/Component/AdvisorDeta'
 import { TranscationRecords } from './Pages/Component/TranscationRecords'
 import ChatbotButton from './Pages/Component/ChatbotButton'
 import { Room } from './Pages/Component/Room'
+// import LandingPage from './Pages/LandingPage'
+import TranscationManager from './Pages/Manager/TranscationManager'
 const Pages = () => {
   return (
     <>
       <Routes>
         <Route path='/' element={<Auth/>}/>
+        {/* <Route path='/' element={<LandingPage/>}/> */}
         <Route path='/front' element={<Front/>}/>
         <Route path ='/apply' element={<Advisor/>}/>
         <Route path="/join-meeting" element={<JoinMeeting/>} />
@@ -41,6 +44,7 @@ const Pages = () => {
         <Route path='/chatbot' element={<ChatBot/>}/>
         <Route path='/chatroom' element={<Room/>}/>
         <Route path='/payment/transcation' element={<TranscationRecords/>}/>
+        <Route path='/manager/transcation' element={<TranscationManager/>}/>
       </Routes>
       <ChatbotButton/>
     </>

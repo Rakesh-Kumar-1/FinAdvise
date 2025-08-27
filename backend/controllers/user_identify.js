@@ -9,20 +9,25 @@ import jwt from 'jsonwebtoken';
 import { Complain } from "../models/complain_details.js";
 import { PaymentRecords } from "../models/payments_records.js";
 import { ChatRoom } from "../models/chatroom.js";
+import { error } from "console";
 
-export const register = async (req, res) => {
+const handleResponse = (res,status,message,success,info = null) => {
+    return res.status(status).json({success,message,success,info});
+}
+
+export const register = async (req, res, next) => {
     try {
         const { name, email, password, gender } = req.body;
 
         // Validate input fields (optional but recommended)
         if (!name || !email || !password) {
-            return res.status(400).json({ message: "All fields are required", success: false });
+            handleResponse(res,400,"All fields are required",false);
         }
 
         // Check if user already exists
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-            return res.status(400).json({ message: "User already exists with this email", success: false });
+            handleResponse(res,400,"User already exists with this email",false);
         }
 
         // Hash the password
@@ -38,22 +43,17 @@ export const register = async (req, res) => {
             password: hashedPassword,
             image: profilePhoto,
         });
-
-        return res.status(201).json({
-            message: "Account created successfully",
-            success: true
-        });
+        handleResponse(res,201,"Account created successfully",true);
     } catch (error) {
         console.log("Registration Error:", error);
-        return res.status(500).json({ message: "Internal server error", success: false });
+        next(error)
     }
 };
-export const login = async (req, res) => {
+export const login = async (req, res, next) => {
     try {
         const { email, password } = req.body;
-
         if (!email || !password) {
-            return res.status(400).json({ message: "All fields are required", success: false });
+            handleResponse(res,400,"All fields are required",false);
         }
 
         const user = await User.findOne({ email });
@@ -62,16 +62,17 @@ export const login = async (req, res) => {
 
         // Advisor login with default password
         if (advisor && email === advisor.email && password === "manager0000") {
-            return res.status(200).json({ message: "Login Successfully Advisor", success: true, info: advisor });
+            handleResponse(res,200,"Login Successfully Advisor",false,advisor);
         }
-
         // Admin login
         if (email === "admin@gmail.com" && password === "admin") {
-            return res.status(200).json({ message: "Login Successfully Admin", success: true });
+            handleResponse(res,200,"Login Successfully Admin",true);
         }
-
+        if (email === "priya.sharma@gmail.com" && password === "manager01") {
+            handleResponse(res,200,"Login Successfully Manager",true);
+        }
         if (!user && !manager) {
-            return res.status(400).json({ message: "Enter valid email or password", success: false });
+            handleResponse(res,400,"Enter valid email or password",false);
         }
 
         const isPasswordMatch = user
@@ -79,7 +80,7 @@ export const login = async (req, res) => {
             : await bcrypt.compare(password, manager.password);
 
         if (!isPasswordMatch) {
-            return res.status(401).json({ message: "Incorrect email or password", success: false });
+            handleResponse(res,401,"Incorrect email or password",false);
         }
 
         const tokenData = {
@@ -97,10 +98,8 @@ export const login = async (req, res) => {
             info: user || manager,
             success: true
         });
-
     } catch (error) {
-        console.log("Login Error:", error);
-        return res.status(500).json({ message: "Internal Server Error", success: false });
+        next(error);
     }
 };
 export const logout = async (req, res) => {
@@ -116,9 +115,9 @@ export const logout = async (req, res) => {
 export const fetchAdvisors = async (req, res) => {
     try {
         const advisors = await Advisor.find({ permission: 'allow' }); 
-        res.status(200).json({ data: advisors });
-    } catch (err) {
-        res.status(500).json({ message: 'Failed to fetch advisors', error: err.message });
+        handleResponse(res,201,"Fetched Advisor",true,advisors)
+    } catch (error) {
+        next(error)
     }
 };
 export const details = async (req, res) => {
@@ -395,4 +394,13 @@ export const bookdschedule = async (req, res) => {
     return res.status(500).json({ status: false, error: err.message });
   }
 };
+export const transactionManager = async (req, res) => {
+    try {
+        const data = await PaymentRecords.find({});
+        return res.status(200).json({ data, message: "Data fetched successfully" });
+    } catch (err) {
+        return res.status(500).json({ message: "Failed to fetch data", error: err.message || err });
+    }
+};
+
 

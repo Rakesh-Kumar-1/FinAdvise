@@ -1,77 +1,115 @@
-import axios from 'axios';
-import React, { useState, useContext } from 'react';
+import axios from "axios";
+import React, { useState, useContext, useMemo } from "react";
 import { IoSend } from "react-icons/io5";
-import { UserContext } from '../Context/UserContext';
-import { useNavigate } from 'react-router-dom';
-import { ScheduleBooked } from './ScheduleBooked';
-import '../../CSS/Advisorfront.css'
+import { UserContext } from "../Context/UserContext";
+import { useNavigate } from "react-router-dom";
+import { ScheduleBooked } from "./ScheduleBooked";
+import "../../CSS/Advisorfront.css";
 
 const Advisorfront = () => {
   const [showComplainForm, setShowComplainForm] = useState(false);
-  const [sender, setSender] = useState('');
-  const [subject, setSubject] = useState('');
-  const [description, setDescription] = useState('');
-  const [selectedDay, setSelectedDay] = useState('');
+  const [sender, setSender] = useState("");
+  const [subject, setSubject] = useState("");
+  const [description, setDescription] = useState("");
+  const [selectedDay, setSelectedDay] = useState("");
   const [selectedTimes, setSelectedTimes] = useState({});
   const { position, setPosition } = useContext(UserContext);
   const navigate = useNavigate();
 
   const id = position?._id;
-  const hours = Array.from({ length: 12 }, (_, i) => `${i + 9}:00 ${i + 9 < 12 ? 'AM' : 'PM'}`);
-  const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+  const hours = Array.from(
+    { length: 12 },
+    (_, i) => `${i + 9}:00 ${i + 9 < 12 ? "AM" : "PM"}`
+  );
+  const days = [
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday",
+  ];
 
   const handleTimeToggle = (day, hour) => {
-    setSelectedTimes(prev => {
+    setSelectedTimes((prev) => {
       const currentDayTimes = prev[day] || [];
       const isSelected = currentDayTimes.includes(hour);
 
       return {
         ...prev,
         [day]: isSelected
-          ? currentDayTimes.filter(t => t !== hour)
+          ? currentDayTimes.filter((t) => t !== hour)
           : [...currentDayTimes, hour],
       };
     });
   };
 
+  const getProfilePhotoSrc = useMemo(() => {
+    return (profilePhoto) => {
+      if (!profilePhoto || !profilePhoto.data) return null;
+
+      try {
+        // Handle both Buffer and base64 string data
+        let base64Image;
+        if (typeof profilePhoto.data === "string") {
+          base64Image = profilePhoto.data;
+        } else if (profilePhoto.data.type === "Buffer") {
+          base64Image = btoa(String.fromCharCode(...profilePhoto.data.data));
+        } else {
+          base64Image = profilePhoto.data.toString("base64");
+        }
+
+        const contentType = profilePhoto.contentType || "image/jpeg";
+        return `data:${contentType};base64,${base64Image}`;
+      } catch (error) {
+        console.error("Error converting profile photo:", error);
+        return null;
+      }
+    };
+  }, []);
+
   const handleSaveAvailability = async () => {
     try {
-      const res = await axios.post('http://localhost:8080/advisor/schedule', {
+      const res = await axios.post("http://localhost:8080/advisor/schedule", {
         selectedTimes,
         id,
       });
-      if (res.data.message === 'Successfull') {
+      if (res.data.message === "Successfull") {
         setPosition(res.data.info);
-        alert('Availability saved successfully!');
+        alert("Availability saved successfully!");
       } else {
-        alert('Failed to save schedule. Try again.');
+        alert("Failed to save schedule. Try again.");
       }
     } catch (err) {
       console.error(err);
-      alert('Server error while saving availability');
+      alert("Server error while saving availability");
     }
   };
 
   const complainForm = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:8080/advisor/complainForm', {
-        sender,
-        subject,
-        description,
-        role: 'advisor'
-      });
+      const res = await axios.post(
+        "http://localhost:8080/advisor/complainForm",
+        {
+          sender,
+          subject,
+          description,
+          role: "advisor",
+        }
+      );
 
-      if (res.data.message === 'Successfull') {
-        alert('Complaint raised successfully.');
+      if (res.data.message === "Successfull") {
+        alert("Complaint raised successfully.");
         setShowComplainForm(false);
-        setSender('');
-        setSubject('');
-        setDescription('');
+        setSender("");
+        setSubject("");
+        setDescription("");
       }
     } catch (err) {
       console.error(err);
-      alert('Failed to raise complaint.');
+      alert("Failed to raise complaint.");
     }
   };
 
@@ -80,16 +118,45 @@ const Advisorfront = () => {
       <nav className="admin-navbar">
         <div className="admin-nav-right">
           <button className="admin-nav-link">Profile</button>
-          <span className="admin-menu-title" onClick={() => setShowComplainForm(true)}>Complain</span>
-          <span className="admin-menu-title" onClick={() => navigate("/payment/transcation")}>Transaction</span>
-          <span className="nav-link" onClick={()=>navigate('/chatroom',{state:{positionId: position._id,source:'advisor'}})}>ChatRoom</span>
-          <a className="admin-nav-link" href="mailto:official@example.com">Email</a>
+          <span
+            className="admin-menu-title"
+            onClick={() => setShowComplainForm(true)}
+          >
+            Complain
+          </span>
+          <span
+            className="admin-menu-title"
+            onClick={() => navigate("/payment/transcation")}
+          >
+            Transaction
+          </span>
+          <span
+            className="nav-link"
+            onClick={() =>
+              navigate("/chatroom", {
+                state: { positionId: position._id, source: "advisor" },
+              })
+            }
+          >
+            ChatRoom
+          </span>
+          <a className="admin-nav-link" href="mailto:official@example.com">
+            Email
+          </a>
         </div>
       </nav>
 
       <section className="advisor-container">
         <div className="profile-pic">
-          <img src="https://via.placeholder.com/150" alt="Profile" />
+          <img
+            src={getProfilePhotoSrc(position.profilePhoto)}
+            alt={`${position.fullname}'s profile`}
+            className="profile-photo"
+            onError={(e) => {
+              console.error("Error loading profile photo");
+              e.target.src = "/placeholder-avatar.png"; // Add a placeholder
+            }}
+          />
         </div>
 
         <div className="weekly-schedule">
@@ -98,7 +165,7 @@ const Advisorfront = () => {
             {days.map((day) => (
               <button
                 key={day}
-                className={`day-btn ${selectedDay === day ? 'active' : ''}`}
+                className={`day-btn ${selectedDay === day ? "active" : ""}`}
                 onClick={() => setSelectedDay(day)}
               >
                 {day.charAt(0).toUpperCase() + day.slice(1)}
@@ -114,7 +181,9 @@ const Advisorfront = () => {
                   <label key={hour} className="hour-slot">
                     <input
                       type="checkbox"
-                      checked={selectedTimes[selectedDay]?.includes(hour) || false}
+                      checked={
+                        selectedTimes[selectedDay]?.includes(hour) || false
+                      }
                       onChange={() => handleTimeToggle(selectedDay, hour)}
                     />
                     {hour}
@@ -133,7 +202,13 @@ const Advisorfront = () => {
         <form className="compose-window" onSubmit={complainForm}>
           <div className="compose-header">
             <h2>NEW COMPLAINT</h2>
-            <button type="button" className="close-btn" onClick={() => setShowComplainForm(false)}>×</button>
+            <button
+              type="button"
+              className="close-btn"
+              onClick={() => setShowComplainForm(false)}
+            >
+              ×
+            </button>
           </div>
 
           <div className="compose-inputs">
@@ -163,7 +238,9 @@ const Advisorfront = () => {
           </div>
 
           <div className="compose-footer">
-            <button className="send-btn" type="submit"><IoSend /></button>
+            <button className="send-btn" type="submit">
+              <IoSend />
+            </button>
           </div>
         </form>
       )}

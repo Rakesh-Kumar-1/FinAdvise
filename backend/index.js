@@ -31,25 +31,68 @@ const io = new SocketIOServer(server, {
 });
 
 // Global socket handler (basic)
+const connectedUsers = new Map(); // key = userId, value = socket.id
+
 io.on('connection', (socket) => {
   console.log('🟢 New client connected:', socket.id);
 
- socket.on('join_room', (roomId) => {
-  socket.join(roomId);
-  console.log(`Socket ${socket.id} joined room ${roomId}`);
-});
-  // Receiving message
-socket.on('send_message', (message) => {
-  io.to(message.chatRoomId).emit('receiveMessage', message);
-});
+  // 1️⃣ Identify user on connect
+  socket.on('identify', ({ userId }) => {
+    connectedUsers.set(userId, socket.id);
+    console.log(`✅ User ${userId} identified with socket ${socket.id}`);
+  });
 
+  // 2️⃣ Join chat room after verifying participation
+  socket.on('join_room', async ({ chatRoomId, userId }) => {
+    const chatRoom = await ChatRoom.findById(chatRoomId);
+    if (!chatRoom) return;
+
+    const isParticipant =
+      chatRoom.clientId.toString() === userId ||
+      chatRoom.advisorId.toString() === userId;
+
+    if (isParticipant) {
+      socket.join(chatRoomId);
+      console.log(`📥 User ${userId} joined room ${chatRoomId}`);
+    } else {
+      console.warn(`🚫 Unauthorized join attempt by user ${userId} to room ${chatRoomId}`);
+    }
+  });
+
+  // 3️⃣ Send message (receiver may or may not be online)
+  socket.on('send_message', (message) => {
+    const { chatRoomId, receiverId } = message;
+
+    // Emit to room for real-time update
+    io.to(chatRoomId).emit('receiveMessage', message);
+
+    // If receiver is online (for future notification use)
+    const receiverSocket = connectedUsers.get(receiverId);
+    if (receiverSocket) {
+      console.log(`📡 Message delivered to receiver ${receiverId}`);
+    } else {
+      console.log(`📭 Receiver ${receiverId} offline. Message stored in DB.`);
+      // 🔔 Optionally trigger push/email/notification
+    }
+  });
+
+  // 4️⃣ Cleanup on disconnect
   socket.on('disconnect', () => {
-    console.log('🔴 Client disconnected:', socket.id);
+    for (let [userId, sockId] of connectedUsers.entries()) {
+      if (sockId === socket.id) {
+        connectedUsers.delete(userId);
+        console.log(`🔴 User ${userId} disconnected`);
+        break;
+      }
+    }
   });
 });
 
+
 // Middleware
 import './middleware/restoreSlots.js';
+import { ChatRoom } from './models/chatroom.js';
+import { errorHandling } from './middleware/errorHandling.js';
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -72,6 +115,7 @@ app.use('/manager', managerRoute);
 app.use('/advisor', advisorRoute);
 app.use('/chat', chatRoutes);
 app.use('/payment/records', records);
+app.use(errorHandling)
 
 // Start HTTP + WebSocket server
 server.listen(PORT, () => {

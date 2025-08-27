@@ -37,17 +37,7 @@ const managerSchema = new mongoose.Schema({
   images: {
     type: String,
     trim: true
-  },
-  // Optional future fields:
-  // rating: {
-  //   type: Number,
-  //   min: 0,
-  //   max: 5
-  // },
-  // client: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: 'Client'
-  // }
+  }
 }, {
   timestamps: true
 });
