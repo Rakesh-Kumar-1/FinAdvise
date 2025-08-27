@@ -1,11 +1,13 @@
 import { createTransport } from "nodemailer";
+import  dotenv  from "dotenv";
 
+dotenv.config();
 // Create reusable transporter using Gmail
 const transporter = createTransport({
     service: "gmail",
     auth: {
-        user: "brandy.singh0001@gmail.com",          // your Gmail address 
-        pass: "nsvyowthwkdxiwgt"          // 16-digit App Password
+        user: process.env.USER,          // your Gmail address 
+        pass: process.env.PASS          // 16-digit App Password
     },
 });
 
@@ -20,7 +22,7 @@ export const mail = async (req, res) => {
     const recipients = participants;
 
     const mailOptions = {
-        from: "brand.si3168@gmail.com",   // your Gmail address  // brand.si3168@gmail.com 
+        from: process.env.USER,   // your Gmail address  // brand.si3168@gmail.com 
         to: recipients.join(","), // Join recipients as comma-separated string
         subject: subject,  //"Nodemailer Test to Multiple People", 
         text: text  //"Hi all! This is a test email sent from Nodemailer using Gmail and App Password.",

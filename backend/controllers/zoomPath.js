@@ -8,9 +8,9 @@ app.use(express.json());
 app.use(cors());
 
 // Replace with your Zoom App Credentials
-const zoomAccountId = "vIoZvfQRTJysDikOqIkrFg";
-const zoomClientId = "v4x5NVd0QBWp_5uWJs_Rvg";
-const zoomClientSecret = "p14L8LFIH5SvkuxSlMOWXNqIlnjnYkty";
+const zoomAccountId = process.env.ZOOMACCOUNTID
+const zoomClientId = process.env.ZOOMCLIENTID
+const zoomClientSecret = process.env.ZOOMCLIENTSECRET
 
 // Auth Headers for Zoom OAuth
 const getAuthHeaders = () => ({
