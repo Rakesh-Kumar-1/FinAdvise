@@ -25,6 +25,7 @@ router.post('/followrequest',followRequest)
 router.post('/zoom',zoomService)
 router.post('/sendmail',mail)
 router.get('/gender/:name',gender);
+router.post('/changepassword',changePassword);
 
 //------------------multer------------------------------
 // Custom storage engine that handles different storage for different fields

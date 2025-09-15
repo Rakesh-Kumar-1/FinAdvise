@@ -366,14 +366,14 @@ export const clientbill = async (req, res, next) => {
         // Find the advisor to validate the time slot
         const advisor = await Advisor.findById(id);
         if (!advisor) {
-            return handleResponse(res, 400, 'Advisor not found', false);
+            handleResponse(res, 400, 'Advisor not found', false);
         }
 
         const normalizedDay = date.toLowerCase();
 
         // Check for time slot availability
         if (!advisor.schedule[normalizedDay] || !advisor.schedule[normalizedDay].includes(time)) {
-            return handleResponse(res, 400, `Time slot not available on ${normalizedDay}`, false);
+            handleResponse(res, 400, `Time slot not available on ${normalizedDay}`, false);
         }
 
         // --- All checks passed, perform atomic updates ---
@@ -418,7 +418,7 @@ export const clientbill = async (req, res, next) => {
 
         if (!advisorUpdateResult) {
             // This case would be rare but is good practice to handle
-            return handleResponse(res, 500, 'Failed to update advisor document', false);
+            handleResponse(res, 500, 'Failed to update advisor document', false);
         }
 
         handleResponse(res, 200, "Slot booked", true);
@@ -493,4 +493,20 @@ export const gender = async(req, res, next) => {
   } catch (error) {
     next(error);
   }
+}
+export const changePassword = async(req,res,next) =>{
+    try{
+        const {newPassword,id} = req.body;
+        const updatedUser = await User.findByIdAndUpdate(
+        id, 
+            { password: newPassword },
+            { new: true, runValidators: true } // Options
+        );
+        if(!updatedUser){
+            handleResponse(res, 500, 'Failed to update new Password', false);
+        }
+        handleResponse(res, 200, 'Update Password', true);
+    }catch(error){
+        next(error);
+    }
 }
