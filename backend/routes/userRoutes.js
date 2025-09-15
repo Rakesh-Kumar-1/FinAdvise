@@ -1,5 +1,5 @@
 import express from 'express';
-import { complainForm, details, fetchAdvisors, followRequest, login, logout, register, } from '../controllers/user_identify.js';
+import { complainForm, details, fetchAdvisors, followRequest, forgotPassword, gender, login, logout, register, } from '../controllers/user_identify.js';
 import multer from 'multer';
 import crypto from "crypto"
 import path from 'path'
@@ -14,7 +14,8 @@ import { zoomService } from '../controllers/zoomPath.js';
 import { mail } from '../controllers/mailsend.js';
 const router = express.Router();
 
-router.post('/register', register);  
+router.post('/register', register);
+router.post('/forgot-password',forgotPassword)
 router.post('/login', login);
 router.get('/logout', logout);
 router.get('/fetch-advisor',fetchAdvisors)
@@ -23,6 +24,7 @@ router.post('/complainForm',complainForm)
 router.post('/followrequest',followRequest) 
 router.post('/zoom',zoomService)
 router.post('/sendmail',mail)
+router.get('/gender/:name',gender);
 
 //------------------multer------------------------------
 // Custom storage engine that handles different storage for different fields

@@ -38,16 +38,16 @@ const advisorDetailsSchema = new mongoose.Schema({
   },
   rating: {
     type: Number,
-    default: 0
+    default: '0',
   },
   client: {
-    type: String,
-    default: null,
+    type: Number,
+    default: '0',
   },
   status: {
     type: String,
     enum: ['active', 'inactive'],
-    default: 'inactive', 
+    default: 'active', 
   },
   permission: {
     type: String,
@@ -61,11 +61,11 @@ const advisorDetailsSchema = new mongoose.Schema({
   profilePhoto: {
     data: {
       type: Buffer,
-      required: true      // Make profile photo mandatory
+      // required: true,      // Make profile photo mandatory
     },
     contentType: {
       type: String,
-      required: true
+      // required: true
     }
   },
  schedule: {

@@ -14,19 +14,19 @@ import Advisorfront from './Pages/Advisor/Advisorfront'
 import AdvisorApprove from './Pages/Manager/AdvisorApprove'
 import Test from './Test'
 import Setting from './Pages/Component/Setting'
-import  ChatBot  from './Pages/Component/Chatbot'
+import ChatBot from './Pages/Component/ChatBot'
 import AdvisorDeta from './Pages/Component/AdvisorDeta'
 import { TranscationRecords } from './Pages/Component/TranscationRecords'
 import ChatbotButton from './Pages/Component/ChatbotButton'
 import { Room } from './Pages/Component/Room'
-// import LandingPage from './Pages/LandingPage'
+import LandingPage from './Pages/LandingPage'
 import TranscationManager from './Pages/Manager/TranscationManager'
 const Pages = () => {
   return (
     <>
       <Routes>
         <Route path='/' element={<Auth/>}/>
-        {/* <Route path='/' element={<LandingPage/>}/> */}
+        <Route path='/practice' element={<LandingPage/>}/>
         <Route path='/front' element={<Front/>}/>
         <Route path ='/apply' element={<Advisor/>}/>
         <Route path="/join-meeting" element={<JoinMeeting/>} />
@@ -36,7 +36,7 @@ const Pages = () => {
         <Route path= '/manager' element={<ManagerProfile/>}/>
         <Route path="/managerinfo/:id" element={<ManagerInfo/>}/>
         <Route path='/transcation/:name' element={<Transcation/>}/>
-        <Route path='/complain/:name' element={<Complain/>}/>
+        <Route path='manager/complain/:name' element={<Complain/>}/>
         <Route path='/advisor' element={<Advisorfront/>}/>
         <Route path='/advisor-application' element={<AdvisorApprove/>}/>
         <Route path='/test' element={<Test/>}/>

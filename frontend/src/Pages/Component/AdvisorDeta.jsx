@@ -34,7 +34,7 @@ const AdvisorDeta = () => {
         axios.get('http://localhost:8080/user/fetch-advisor')
       ]);
       
-      setAdvisor(advisorRes.data?.data || advisorRes.data);
+      setAdvisor(advisorRes.data.info || advisorRes.data.info);
       setAllAdvisors(allAdvisorsRes.data.info);
     } catch (err) {
       setError('Failed to fetch advisor details');
@@ -105,12 +105,12 @@ const AdvisorDeta = () => {
         method
       });
 
-      if (scheduleRes.data.msg === 'Slot booked') {
+      if (scheduleRes.data.message === 'Slot booked') {
         alert('Meeting scheduled successfully!');
         navigate(0);
       }
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       alert(`Error while scheduling meeting. Transaction ID: ${transactionId}`);
     }
     

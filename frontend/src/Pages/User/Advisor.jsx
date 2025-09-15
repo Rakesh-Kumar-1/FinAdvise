@@ -54,9 +54,9 @@ const Advisor = () => {
         },
       });
       alert("Submitted successfully");
-      console.log(res.data);
+      console.log(res.data.message);
     } catch (err) {
-      console.error("Submission error:", err.response?.data || err.message);
+      console.log(err);
       alert("Submission failed. Check console for more info.");
     }
   };

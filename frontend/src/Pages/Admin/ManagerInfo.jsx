@@ -12,7 +12,7 @@ const ManagerInfo = () => {
         const fetchManager = async() =>{
             try{
                 const res = await axios.get(`http://localhost:8080/admin/managerinfo/${id}`);
-                setManager(res.data)
+                setManager(res.data.info)
             }catch(err){
                 console.log('Failed to fetch manager',err)
             }

@@ -9,7 +9,7 @@ const TransactionManager = () => {
   const fetchData = async () => {
     try {
       const response = await axios.get('http://localhost:8080/manager/transaction');
-      setData(response.data.data || []);
+      setData(response.data.info || []);
     } catch (error) {
       console.error('Failed to fetch transaction data:', error);
     } finally {

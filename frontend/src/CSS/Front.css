@@ -62,14 +62,10 @@ html, body {
   box-shadow: var(--shadow-sm);
 }
 
-.nav-brand h2 {
-  background: var(--bg-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-weight: 800;
-  font-size: 1.5rem;
-  letter-spacing: -0.02em;
+.nav-brand .logo {
+  height: 100px;
+  width: 50px; /* You can adjust this value to make it bigger or smaller */
+  width: auto; /* This maintains the image's aspect ratio */
 }
 
 .nav-right {
@@ -124,6 +120,7 @@ html, body {
   transform: scale(1.05);
   box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
 }
+
 
 /* Main Content */
 .main-content {

@@ -10,7 +10,7 @@ const Transcation = () => {
         const fetchManager = async () => {
             try {
                 const res = await axios.get(`http://localhost:8080/admin/transcation/${name}`);
-                setTrans(res.data)
+                setTrans(res.data.info)
             } catch (err) {
                 console.log('Failed to fetch manager', err)
             }

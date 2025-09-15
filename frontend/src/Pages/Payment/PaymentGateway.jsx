@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { CreditCard, Smartphone, Wallet, Building, Lock, ArrowLeft, Check } from 'lucide-react';
+import "../../CSS/PaymentGateway.css"
 
 const PaymentGateway = ({ advisor, date, time, onPaymentSuccess, onBack,price }) => {
+  console.log("Payment Gateway");
   const [currentStep, setCurrentStep] = useState('methods'); // 'methods' | 'form' | 'success'
   const [selectedMethod, setSelectedMethod] = useState(null);
   const [loading, setLoading] = useState(false);

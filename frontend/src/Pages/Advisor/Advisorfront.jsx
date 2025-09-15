@@ -12,11 +12,11 @@ const Advisorfront = () => {
   const [subject, setSubject] = useState("");
   const [description, setDescription] = useState("");
   const [selectedDay, setSelectedDay] = useState("");
-  const [selectedTimes, setSelectedTimes] = useState({});
+  const [schedule, setSchedule] = useState({});
   const { position, setPosition } = useContext(UserContext);
   const navigate = useNavigate();
 
-  const id = position?._id;
+  const advisorId = position?._id;
   const hours = Array.from(
     { length: 12 },
     (_, i) => `${i + 9}:00 ${i + 9 < 12 ? "AM" : "PM"}`
@@ -32,7 +32,7 @@ const Advisorfront = () => {
   ];
 
   const handleTimeToggle = (day, hour) => {
-    setSelectedTimes((prev) => {
+    setSchedule((prev) => {
       const currentDayTimes = prev[day] || [];
       const isSelected = currentDayTimes.includes(hour);
 
@@ -72,10 +72,10 @@ const Advisorfront = () => {
   const handleSaveAvailability = async () => {
     try {
       const res = await axios.post("http://localhost:8080/advisor/schedule", {
-        selectedTimes,
-        id,
+        schedule,
+        advisorId,
       });
-      if (res.data.message === "Successfull") {
+      if (res.data.message === "Schedule updated successfully") {
         setPosition(res.data.info);
         alert("Availability saved successfully!");
       } else {
@@ -182,7 +182,7 @@ const Advisorfront = () => {
                     <input
                       type="checkbox"
                       checked={
-                        selectedTimes[selectedDay]?.includes(hour) || false
+                        schedule[selectedDay]?.includes(hour) || false
                       }
                       onChange={() => handleTimeToggle(selectedDay, hour)}
                     />
@@ -245,7 +245,7 @@ const Advisorfront = () => {
         </form>
       )}
 
-      <ScheduleBooked id={id} />
+      <ScheduleBooked id={advisorId} />
     </div>
   );
 };

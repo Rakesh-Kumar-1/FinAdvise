@@ -13,9 +13,16 @@ const userSchema = new mongoose.Schema({
         type:String,
         required:true
     },
-    image: {
-    type: String,
-    default:null
+    phone:{
+        type:Number,
+        required:true,
+    },
+    gender:{
+        type:String,
+        default:null,
+    },
+    totalmet: {
+        type: Number,
     },
     follows: {
         type: [String],

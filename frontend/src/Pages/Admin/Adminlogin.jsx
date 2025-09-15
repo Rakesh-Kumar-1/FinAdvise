@@ -31,7 +31,7 @@ const AdminLogin = () => {
 
       setLabel(newLabel);
       const response = await axios.get(url);
-      setItems(response.data.data);
+      setItems(response.data.info);
     } catch (error) {
       console.error(`Error fetching data for ${type}:`, error);
     }

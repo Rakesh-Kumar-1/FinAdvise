@@ -22,7 +22,6 @@ const ChatBot = () => {
       const botMsg = { text: res.data.answer, sender: "bot" };
       setMessages(prev => [...prev, botMsg]);
     } catch (err) {
-        console.error(err);
       const errMsg = { text: "Sorry, something went wrong.", sender: "bot" };
       setMessages(prev => [...prev, errMsg]);
     }

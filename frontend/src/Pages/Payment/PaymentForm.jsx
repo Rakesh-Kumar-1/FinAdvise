@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Lock, Mail, Phone } from 'lucide-react';
 
 export const PaymentForm = ({ method, product, onSubmit }) => {
+  console.log("payment Form");
   const [formData, setFormData] = useState({
     cardNumber: '',
     expiryDate: '',
