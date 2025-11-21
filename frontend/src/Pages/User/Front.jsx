@@ -263,7 +263,7 @@ const Front = () => {
       try {
         const user = position._id;
         const res = await axios.post(
-          "http://localhost:8080/user/followrequest",
+          "https://finadvise-backend.onrender.com/user/followrequest",
           {
             id,
             user,
@@ -294,7 +294,7 @@ const Front = () => {
       e.preventDefault();
       try {
         const res = await axios.post(
-          "http://localhost:8080/user/complainForm",
+          "https://finadvise-backend.onrender.com/user/complainForm",
           {
             sender,
             subject,
@@ -322,7 +322,7 @@ const Front = () => {
       try {
         setLoading(true);
         const response = await axios.get(
-          "http://localhost:8080/user/fetch-advisor"
+          "https://finadvise-backend.onrender.com/user/fetch-advisor"
         );
         setAdvisors(response.data.info);
         // console.log(typeof(response.data.info));

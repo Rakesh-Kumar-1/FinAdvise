@@ -15,7 +15,7 @@ const ChatBot = () => {
 
     try {
       // Call backend
-      const res = await axios.post("http://localhost:8080/chat/chatbot", {
+      const res = await axios.post("https://finadvise-backend.onrender.com/chat/chatbot", {
         message: input,
       });
 

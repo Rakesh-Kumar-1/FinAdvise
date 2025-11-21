@@ -17,15 +17,15 @@ const AdminLogin = () => {
 
       switch (type) {
         case 'user':
-          url = `http://localhost:8080/admin/complaiall/${'user'}`;
+          url = `https://finadvise-backend.onrender.com/admin/complaiall/${'user'}`;
           newLabel = 'User Complain';
           break;
         case 'advisor':
-          url = `http://localhost:8080/admin/complainall/${'advisor'}`;
+          url = `https://finadvise-backend.onrender.com/admin/complainall/${'advisor'}`;
           newLabel = 'Advisor Complain';
           break;
         default:
-          url = 'http://localhost:8080/admin/fetch-manager';
+          url = 'https://finadvise-backend.onrender.com/admin/fetch-manager';
           newLabel = 'Manager';
       }
 

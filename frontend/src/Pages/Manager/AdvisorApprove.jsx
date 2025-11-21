@@ -10,7 +10,7 @@ const AdvisorApprove = () => {
 
   const fetchDisapproved = async () => {
     try {
-      const res = await axios.get('http://localhost:8080/manager/disapprovelist');
+      const res = await axios.get('https://finadvise-backend.onrender.com/manager/disapprovelist');
       setAdvisors(res.data.info);
     } catch (err) {
       console.log("Error fetching disapproved advisors:", err);
@@ -23,7 +23,7 @@ const AdvisorApprove = () => {
 
   const handleApprove = async (id) => {
     try {
-      const approve = await axios.post(`http://localhost:8080/manager/approve/${id}`);
+      const approve = await axios.post(`https://finadvise-backend.onrender.com/manager/approve/${id}`);
       if (approve.data.message === 'Advisor created successfully') {
         alert("Advisor approved successfully.");
         await fetchDisapproved();
@@ -37,7 +37,7 @@ const AdvisorApprove = () => {
 
   const handleReject = async (id) => {
     try {
-      const reject = await axios.post(`http://localhost:8080/manager/reject/${id}`);
+      const reject = await axios.post(`https://finadvise-backend.onrender.com/manager/reject/${id}`);
       if (reject.data.message === 'Advisor delete successfully') {
         alert("Advisor rejected.");
         await fetchDisapproved();
@@ -120,7 +120,7 @@ const AdvisorApprove = () => {
                     <label>Certificates</label>
                     {item.images.map((img, i) => (
                       <div key={i} style={{ marginBottom: '15px' }}>
-                        <a href={`http://localhost:8080/files/${img}`} target="_blank" rel="noopener noreferrer">
+                        <a href={`https://finadvise-backend.onrender.com/files/${img}`} target="_blank" rel="noopener noreferrer">
                           📄 View 
                         </a>
                       </div>

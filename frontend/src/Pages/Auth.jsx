@@ -35,7 +35,7 @@ const Auth = () => {
     e.preventDefault();
     try {
       if (role === 0) {
-        const message = await axios.post("http://localhost:8080/user/login", user);
+        const message = await axios.post("https://finadvise-backend.onrender.com/user/login", user);
         console.log(message)
         setPosition(message.data.info);
         setPosition((prev) => ({...prev,gender: prev.gender == 'm' ? 'Male' : 'Female'}));
@@ -54,7 +54,7 @@ const Auth = () => {
       }
       if (role === 1) {
         if (user.password === user.confirm) {
-          const message = await axios.post('http://localhost:8080/user/register', user);
+          const message = await axios.post('https://finadvise-backend.onrender.com/user/register', user);
           if(message.data.message === "User already exists with this email"){
             alert("User already exists");
           }
@@ -71,7 +71,7 @@ const Auth = () => {
   };
     const requestForgotPassword = async () => {
     try {
-      const response = await axios.post('http://localhost:8080/user/forgot-password', { email: user.email });
+      const response = await axios.post('https://finadvise-backend.onrender.com/user/forgot-password', { email: user.email });
       setReference(response.data.info);
     } catch (error) {
       alert("Failed to send forgot password request");

@@ -14,7 +14,7 @@ const Complain = () => {
     const fetchData = async() => {
       try {
         const complain = await axios.get(
-          `http://localhost:8080/manager/complaintype/${name}`
+          `https://finadvise-backend.onrender.com/manager/complaintype/${name}`
         );
         setComplain(complain.data.info);
       } catch (err) {
@@ -27,7 +27,7 @@ const Complain = () => {
   const removeData = async (index) => {
     console.log(complain);
     try {
-      const res = await axios.post(`http://localhost:8080/manager/complain`, {
+      const res = await axios.post(`https://finadvise-backend.onrender.com/manager/complain`, {
         feedback,
         name,
         index,

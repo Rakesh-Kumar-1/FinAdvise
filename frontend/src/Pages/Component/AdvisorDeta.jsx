@@ -30,8 +30,8 @@ const AdvisorDeta = () => {
     try {
       setLoading(true);
       const [advisorRes, allAdvisorsRes] = await Promise.all([
-        axios.get(`http://localhost:8080/user/advisor/${id}`),
-        axios.get('http://localhost:8080/user/fetch-advisor')
+        axios.get(`https://finadvise-backend.onrender.com/user/advisor/${id}`),
+        axios.get('https://finadvise-backend.onrender.com/user/fetch-advisor')
       ]);
       
       setAdvisor(advisorRes.data.info || advisorRes.data.info);
@@ -67,7 +67,7 @@ const AdvisorDeta = () => {
     // const participants = [advisor.email, position.email];
 
     try {
-      // const zoom = await axios.post('http://localhost:8080/user/zoom', {
+      // const zoom = await axios.post('https://finadvise-backend.onrender.com/user/zoom', {
       //   participants,
       //   date: selectedDate,
       //   time: selectedTime
@@ -89,13 +89,13 @@ const AdvisorDeta = () => {
       //   - Advisor: ${advisor.fullname}
       // `;
 
-      // await axios.post('http://localhost:8080/user/sendmail', {
+      // await axios.post('https://finadvise-backend.onrender.com/user/sendmail', {
       //   participants,
       //   subject,
       //   text
       // });
 
-      const scheduleRes = await axios.post(`http://localhost:8080/advisor/clientbill`, {
+      const scheduleRes = await axios.post(`https://finadvise-backend.onrender.com/advisor/clientbill`, {
         id,
         date: selectedDate,
         time: selectedTime,

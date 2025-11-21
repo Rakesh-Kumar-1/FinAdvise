@@ -8,7 +8,7 @@ const TransactionManager = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/manager/transaction');
+      const response = await axios.get('https://finadvise-backend.onrender.com/manager/transaction');
       setData(response.data.info || []);
     } catch (error) {
       console.error('Failed to fetch transaction data:', error);

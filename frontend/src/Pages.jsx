@@ -26,7 +26,6 @@ const Pages = () => {
     <>
       <Routes>
         <Route path='/' element={<Auth/>}/>
-        <Route path='/practice' element={<LandingPage/>}/>
         <Route path='/front' element={<Front/>}/>
         <Route path ='/apply' element={<Advisor/>}/>
         <Route path="/join-meeting" element={<JoinMeeting/>} />

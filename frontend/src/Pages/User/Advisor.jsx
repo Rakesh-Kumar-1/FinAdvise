@@ -48,7 +48,7 @@ const Advisor = () => {
     });
 
     try {
-      const res = await axios.post("http://localhost:8080/user/verify", data, {
+      const res = await axios.post("https://finadvise-backend.onrender.com/user/verify", data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

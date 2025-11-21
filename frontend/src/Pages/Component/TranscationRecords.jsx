@@ -10,7 +10,7 @@ export const TranscationRecords = () => {
 
   const fetchDisapproved = async () => {
     try {
-      const res = await axios.get('http://localhost:8080/payment/records', id);
+      const res = await axios.get('https://finadvise-backend.onrender.com/payment/records', id);
       setRecords(res.data.info);
     } catch (err) {
       console.log("Error fetching disapproved advisors:", err);

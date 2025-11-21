@@ -71,7 +71,7 @@ const Advisorfront = () => {
 
   const handleSaveAvailability = async () => {
     try {
-      const res = await axios.post("http://localhost:8080/advisor/schedule", {
+      const res = await axios.post("https://finadvise-backend.onrender.com/advisor/schedule", {
         schedule,
         advisorId,
       });
@@ -91,7 +91,7 @@ const Advisorfront = () => {
     e.preventDefault();
     try {
       const res = await axios.post(
-        "http://localhost:8080/advisor/complainForm",
+        "https://finadvise-backend.onrender.com/advisor/complainForm",
         {
           sender,
           subject,

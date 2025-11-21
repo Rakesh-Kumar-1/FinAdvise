@@ -3,7 +3,7 @@ import axios from "axios";
 import { useLocation } from "react-router-dom";
 import { io } from "socket.io-client";
 
-const SOCKET_SERVER_URL = "http://localhost:8080";
+const SOCKET_SERVER_URL = "https://finadvise-backend.onrender.com";
 
 export const Room = () => {
   const [partner, setPartner] = useState([]);
@@ -43,7 +43,7 @@ export const Room = () => {
     const fetchChatRooms = async () => {
       try {                                               // ChatSideBar
         const response = await axios.get(
-          `http://localhost:8080/chat/chatroom?id=${positionId}&source=${source}`
+          `https://finadvise-backend.onrender.com/chat/chatroom?id=${positionId}&source=${source}`
         );
         setPartner(response.data);
         setMessages([]);
@@ -61,7 +61,7 @@ export const Room = () => {
   // 📨 Fetch messages when chat selected
   const onSelectChat = async (chatRoomId, partnerId) => {
     try {
-      const res = await axios.get(`http://localhost:8080/chat/messages/${chatRoomId}`);  //getMessageByRoom
+      const res = await axios.get(`https://finadvise-backend.onrender.com/chat/messages/${chatRoomId}`);  //getMessageByRoom
       setMessages(res.data);
       setSelectedChat({ chatRoomId, partnerId });
 
@@ -90,7 +90,7 @@ export const Room = () => {
     };
 
     try {
-      await axios.post("http://localhost:8080/chat/sendmessages", messageData);
+      await axios.post("https://finadvise-backend.onrender.com/chat/sendmessages", messageData);
       socket.current.emit("send_message", messageData);
       setMessages((prev) => [...prev, messageData]);
       setNewMessage("");

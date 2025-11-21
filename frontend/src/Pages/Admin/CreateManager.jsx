@@ -32,7 +32,7 @@ const CreateManager = () => {
     });
 
     try {
-      const res = await axios.post("http://localhost:8080/admin/create-manager", data, {
+      const res = await axios.post("https://finadvise-backend.onrender.com/admin/create-manager", data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
