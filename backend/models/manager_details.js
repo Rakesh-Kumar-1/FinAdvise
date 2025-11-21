@@ -33,11 +33,11 @@ const managerSchema = new mongoose.Schema({
   role: {
     type: String,
     default: "manager"
-  },
-  images: {
-    type: String,
-    trim: true
   }
+  // images: {
+  //   type: String,
+  //   trim: true
+  // }
 }, {
   timestamps: true
 });

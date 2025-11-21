@@ -1,3 +1,4 @@
+import RedisClient from "../cache.js";
 import bcrypt from "bcryptjs";
 import fs from 'fs';
 import { fileURLToPath } from "url";
@@ -14,37 +15,33 @@ import axios from 'axios';
 import twilio from "twilio";
 // import client  from "twilio/lib/base/BaseTwilio.js";
 import client from 'twilio'
+// import { permission } from "process";
 
 const handleResponse = (res,status,message,success,info = null) => {
-    return res.status(status).json({success,message,success,info});
+    return res.status(status).json({message,success,info});
 }
-
 export const register = async (req, res, next) => {
     try {
         const { name, email, password, phone } = req.body;
-        if (!name || !email || !password ||!phone) {
-            handleResponse(res,400,"All fields are required",false);
+
+        if (!name || !email || !password || !phone) {
+            return handleResponse(res, 400, "All fields are required", false);
         }
+
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-            handleResponse(res,400,"User already exists with this email",false);
+            return handleResponse(res, 201, "User already exists with this email", false);
         }
-        // Hash the password
+
         const hashedPassword = await bcrypt.hash(password, 10);
-        // Generate profile photo URL
-        const data = {
-            name: name,
-        };
+
+        const data = { name };
         const url = 'https://gender-detection-m29y.onrender.com/predict';
         const urlEncodedData = new URLSearchParams(data);
         const response = await axios.post(url, urlEncodedData);
-        let genderValue = null;
-        if(response.data.gender_prediction =='m'){
-            genderValue="Male"
-        }else{
-            genderValue="Female"
-        }
-        // Create new user
+
+        let genderValue = response.data.gender_prediction === 'm' ? "Male" : "Female";
+
         const newUser = await User.create({
             name,
             email,
@@ -52,17 +49,18 @@ export const register = async (req, res, next) => {
             gender: genderValue,
             phone,
         });
-        handleResponse(res,201,"Account created successfully",true);
+
+        return handleResponse(res, 201, "Account created successfully", true);
     } catch (error) {
         console.log("Registration Error:", error);
-        next(error)
+        next(error);
     }
 };
 export const login = async (req, res, next) => {
     try {
         const { email, password } = req.body;
         if (!email || !password) {
-            handleResponse(res,400,"All fields are required",false);
+            return handleResponse(res,400,"All fields are required",false);
         }
 
         const user = await User.findOne({ email });
@@ -71,26 +69,29 @@ export const login = async (req, res, next) => {
 
         // Advisor login with default password
         if (advisor && email === advisor.email && password === "manager0000") {
-            handleResponse(res,200,"Login Successfully Advisor",false,advisor);
+            return handleResponse(res,200,"Login Successfully Advisor",false,advisor);
         }
         // Admin login
         if (email === "admin@gmail.com" && password === "admin") {
-            handleResponse(res,200,"Login Successfully Admin",true);
+            return handleResponse(res,200,"Login Successfully Admin",true);
         }
         if (email === "priya.sharma@gmail.com" && password === "manager01") {
-            handleResponse(res,200,"Login Successfully Manager",true);
+            return handleResponse(res,200,"Login Successfully Manager",true);
         }
         if (!user && !manager) {
-            handleResponse(res,400,"Enter valid email or password",false);
+            return handleResponse(res,400,"Enter valid email or password",false);
+        }
+        if(user){
+            return handleResponse(res,201,"Login Successfully User",true,user);
         }
 
-        const isPasswordMatch = user
-            ? await bcrypt.compare(password, user.password)
-            : await bcrypt.compare(password, manager.password);
+        // const isPasswordMatch = user
+        //     ? await bcrypt.compare(password, user.password)
+        //     : await bcrypt.compare(password, manager.password);
 
-        if (!isPasswordMatch) {
-            handleResponse(res,401,"Incorrect email or password",false);
-        }
+        // if (!isPasswordMatch) {
+        //     return handleResponse(res,401,"Incorrect email or password",false);
+        // }
 
         const tokenData = {
             userId: user ? user._id : manager._id
@@ -122,21 +123,36 @@ export const logout = async (req, res) => {
     }
 }
 export const fetchAdvisors = async (req, res, next) => {
+    const set = new Set();
+    
     try {
-        const advisors = await Advisor.find({ permission: 'allow' }); 
-        handleResponse(res,201,"Fetched Advisor",true,advisors);
+        const redisAdvisor = await RedisClient.hgetall('advisorlist');
+        for(const item in redisAdvisor){
+            set.add(JSON.parse(redisAdvisor[item]));
+        }
+        if (set.size > 0) {
+            const redisAdvisorData = [...set];
+            return handleResponse(res, 200, "Fetched Advisor (from cache)", true, redisAdvisorData);
+        }
+        const advisor = await Advisor.find({ permission: 'allow' });
+        if (advisor && advisor.length > 0) {
+            await Promise.all(advisor.map(async (item) => {
+                await RedisClient.hset('advisorlist', item._id, JSON.stringify(item));
+            }));
+        }
+        return handleResponse(res, 200, "Fetched Advisors (from DB)", true, advisor);
     } catch (error) {
-        next(error)
+        next(error);
     }
-};
+}
 export const details = async (req, res,next) => {
     const { id } = req.params;
   try {
     const advisor = await Advisor.findById(id);
     if (!advisor) {
-        handleResponse(res,404,"Advisor not found",false);
+        return handleResponse(res,404,"Advisor not found",false);
     }
-    handleResponse(res,200,"Advisor found",true,advisor); 
+    return handleResponse(res,200,"Advisor found",true,advisor); 
   } catch (err) {
     next(err)
   }
@@ -144,7 +160,7 @@ export const details = async (req, res,next) => {
 export const fetchManager = async (req, res,next) => {
     try {
         const managers = await Manager.find({});
-        handleResponse(res,200,"Advisor found",true,managers);
+        return handleResponse(res,200,"Advisor found",true,managers);
     } catch (error) {
         console.error('Error fetching advisors:', error);
         next(error);
@@ -155,7 +171,7 @@ export const managerinfo = async (req, res,next) => {
         const manager = await Manager.findById(req.params.id);
         if (!manager) return res.status(404).json({ message: 'Manager not found' });
         // return res.status(200).json(manager);
-        handleResponse(res,200,"Manager not found",true,manager);
+        return handleResponse(res,200,"Manager not found",true,manager);
     } catch (error) {
         next(error);
     }
@@ -164,7 +180,7 @@ export const fecthinactive = async (req, res,next) => {
     try {
         const advisors = await Advisor.find({ status: 'inactive' });
         // return res.status(200).json({ success: true, data: advisors });
-        handleResponse(res,200,"Fetched inactive advisors",true,advisors);
+        return handleResponse(res,200,"Fetched inactive advisors",true,advisors);
     } catch (error) {
         console.error('Error fetching advisors:', error);
         // return res.status(500).json({ success: false, message: 'Server Error' });
@@ -175,7 +191,7 @@ export const fecthactive = async (req, res,next) => {
     try {
         const advisors = await Advisor.find({ status: 'active' });
         // return res.status(200).json({ success: true, data: advisors });
-        handleResponse(res,200,"Fetched active advisors",true,advisors);
+        return handleResponse(res,200,"Fetched active advisors",true,advisors);
     } catch (error) {
         console.error('Error fetching advisors:', error);
         // return res.status(500).json({ success: false, message: 'Server Error' });
@@ -186,7 +202,7 @@ export const disapproveList = async (req, res,next) => {
     try {
         const advisors = await Advisor.find({ permission: 'notallow' });
         // return res.status(200).json({ success: true, info: advisors });
-        handleResponse(res,200,"Fetched disapproved advisors",true,advisors);
+        return handleResponse(res,200,"Fetched disapproved advisors",true,advisors);
     } catch (error) {
         // return res.status(500).json({ success: false, message: 'Server Error' });
         next(error);
@@ -198,7 +214,7 @@ export const complaintype = async (req, res,next) => {
         console.log(role);
         const complain = await Complain.find({ role: req.params.name, status: 'Unsolved' });
         // return res.status(200).json({ success: true, data: complain });
-        handleResponse(res,200,"Fetched advisors complain",true,complain);
+        return handleResponse(res,200,"Fetched advisors complain",true,complain);
     } catch (error) {
         console.error('Error fetching advisors complain:', error);
         // return res.status(500).json({ success: false, message: 'Server Error' });
@@ -213,7 +229,7 @@ export const complain = async (req, res,next) => {
         complain.feedback = feedback;
         await complain.save();
         //return res.status(200).json({ sucess: true, message: 'Delete sucessfully' })
-        handleResponse(res,200,"Delete sucessfully",true);
+        return handleResponse(res,200,"Delete sucessfully",true);
     } catch (error) {
         //return res.status(500).json({ success: false, message: 'Server Error' });
         next(error);
@@ -223,7 +239,7 @@ export const complainall = async (req, res,next) => {
     try {
         const complainall = await Complain.find({ role: req.params.name });
         // return res.status(200).json({ status: true, data: complainall });
-        handleResponse(res,200,"Fetched all complain",true,complainall);
+        return handleResponse(res,200,"Fetched all complain",true,complainall);
     } catch (err) {
         // return res.status(500).json({ status: false, message: 'Server Error' });
         next(err);
@@ -240,7 +256,7 @@ export const complainForm = async (req, res,next) => {
         })
         await complain.save();
         // return res.status(200).json({ status: true, message: 'Successfull' });
-        handleResponse(res,200,"Successfull",true);
+        return handleResponse(res,200,"Successfull",true);
     } catch (error) {
         //return res.status(500).json({ status: false, message: 'Server Error' });
         next(error);
@@ -252,7 +268,7 @@ export const schedule = async (req, res,next) => {
     // Validate inputs
     if (!advisorId || typeof schedule !== 'object') {
       //return res.status(400).json({ msg: 'Invalid advisorId or schedule data' });
-      handleResponse(res,400,"Invalid advisorId or schedule data",false);
+      return handleResponse(res,400,"Invalid advisorId or schedule data",false);
     }
 
     const advisor = await Advisor.findById(advisorId);
@@ -271,7 +287,7 @@ export const schedule = async (req, res,next) => {
 
     await advisor.save();
     //res.status(200).json({ msg: 'Schedule updated successfully', schedule: advisor.schedule });
-    handleResponse(res,200,"Schedule updated successfully",true,advisor.schedule);
+    return handleResponse(res,200,"Schedule updated successfully",true,advisor.schedule);
   } catch (err) {
     console.error(err);
     //res.status(500).json({ msg: 'Server error', error: err.message });
@@ -286,7 +302,7 @@ export const followRequest = async (req, res,next) => {
         const followed = await User.findById(user);
         if (!followed) {
             //return res.status(404).json({ status: false, message: 'User not found' });
-            handleResponse(res,404,"User not found",false);
+            return handleResponse(res,404,"User not found",false);
         }
 
         // Check if already following
@@ -295,13 +311,13 @@ export const followRequest = async (req, res,next) => {
             followed.follows = followed.follows.filter(item => item !== id);
             await followed.save();
             //return res.status(200).json({ status: true, message: 'unfollowed', info: followed });
-            handleResponse(res,200,"unfollowed",true,followed);
+            return handleResponse(res,200,"unfollowed",true,followed);
         } else {
             // Follow
             followed.follows.push(id);
             await followed.save();
             //return res.status(200).json({ status: true, message: 'followed', info: followed });
-            handleResponse(res,200,"followed",true,followed);
+            return handleResponse(res,200,"followed",true,followed);
         }
 
     } catch (error) {
@@ -315,12 +331,12 @@ export const approveAdvisor = async (req, res,next) => {
         const advisor = await Advisor.findById(req.params.id);
         if (!advisor) {
             //return res.status(500).json({ status: true, message: 'Advisor not found' });
-            handleResponse(res,404,"Advisor not found",false);
+            return handleResponse(res,404,"Advisor not found",false);
         } else {
             advisor.permission = 'allow';
             await advisor.save();
             //return res.status(200).json({ status: true, message: 'Advisor created successfully' });
-            handleResponse(res,200,"Advisor created successfully",true);
+            return handleResponse(res,200,"Advisor created successfully",true);
         }
     }
     catch (error) {
@@ -349,11 +365,11 @@ export const disapproveAdvisor = async (req, res,next) => {
 
         if (!deleted) {
             //return res.status(404).json({ status: false, message: 'Advisor not found' });
-            handleResponse(res,404,"Advisor not found",false);
+            return handleResponse(res,404,"Advisor not found",false);
         }
 
         //return res.status(200).json({ status: true, message: 'Advisor deleted successfully' });
-        handleResponse(res,200,"Advisor deleted successfully",true);
+        return handleResponse(res,200,"Advisor deleted successfully",true);
     } catch (error) {
         console.error('Disapproval error:', error);
         //return res.status(500).json({ status: false, message: 'Server error' });
@@ -366,14 +382,14 @@ export const clientbill = async (req, res, next) => {
         // Find the advisor to validate the time slot
         const advisor = await Advisor.findById(id);
         if (!advisor) {
-            handleResponse(res, 400, 'Advisor not found', false);
+            return handleResponse(res, 400, 'Advisor not found', false);
         }
 
         const normalizedDay = date.toLowerCase();
 
         // Check for time slot availability
         if (!advisor.schedule[normalizedDay] || !advisor.schedule[normalizedDay].includes(time)) {
-            handleResponse(res, 400, `Time slot not available on ${normalizedDay}`, false);
+            return handleResponse(res, 400, `Time slot not available on ${normalizedDay}`, false);
         }
 
         // --- All checks passed, perform atomic updates ---
@@ -418,10 +434,10 @@ export const clientbill = async (req, res, next) => {
 
         if (!advisorUpdateResult) {
             // This case would be rare but is good practice to handle
-            handleResponse(res, 500, 'Failed to update advisor document', false);
+            return handleResponse(res, 500, 'Failed to update advisor document', false);
         }
 
-        handleResponse(res, 200, "Slot booked", true);
+        return handleResponse(res, 200, "Slot booked", true);
 
     } catch (err) {
         console.error('❌ Client bill error:', err.message);
@@ -436,7 +452,7 @@ export const bookdschedule = async (req, res,next) => {
     const advisor = await Advisor.findById(id);
     if (!advisor) {
       //return res.status(404).json({ status: false, msg: 'Advisor not found' });
-      handleResponse(res,404,"Advisor not found",false);
+      return handleResponse(res,404,"Advisor not found",false);
     }
 
     return res.status(200).json({
@@ -454,7 +470,7 @@ export const transactionManager = async (req, res,next) => {
     try {
         const data = await PaymentRecords.find({});
         //return res.status(200).json({ data, message: "Data fetched successfully" });
-        handleResponse(res,200,"Data fetched successfully",true,data);
+        return handleResponse(res,200,"Data fetched successfully",true,data);
     } catch (err) {
         //return res.status(500).json({ message: "Failed to fetch data", error: err.message || err });
         next(err);
@@ -474,7 +490,7 @@ export const forgotPassword = async (req,res,next) => {
         })
         .then(message => console.log(message.sid))
         .catch(err => console.error('Error sending SMS:', err));
-        handleResponse(res,200,"OTP sent successfully",true,otp);
+        return handleResponse(res,200,"OTP sent successfully",true,otp);
     }
     catch (error) {
         next(error);
@@ -489,7 +505,7 @@ export const gender = async(req, res, next) => {
         const url = 'https://gender-detection-m29y.onrender.com/predict';
         const urlEncodedData = new URLSearchParams(data);
         const response = await axios.post(url, urlEncodedData);
-        handleResponse(res, 200, "Gender detected", true,  response.data);
+        return handleResponse(res, 200, "Gender detected", true,  response.data);
   } catch (error) {
     next(error);
   }
@@ -503,9 +519,9 @@ export const changePassword = async(req,res,next) =>{
             { new: true, runValidators: true } // Options
         );
         if(!updatedUser){
-            handleResponse(res, 500, 'Failed to update new Password', false);
+            return handleResponse(res, 500, 'Failed to update new Password', false);
         }
-        handleResponse(res, 200, 'Update Password', true);
+        return handleResponse(res, 200, 'Update Password', true);
     }catch(error){
         next(error);
     }

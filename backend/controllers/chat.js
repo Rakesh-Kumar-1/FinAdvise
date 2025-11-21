@@ -3,87 +3,42 @@ import { ChatRoom } from "../models/chatroom.js";
 import { Message } from "../models/messages.js";
 import { User } from "../models/user_module.js";
 import { chatbot } from "./chatbot.js";
-import OpenAI from "openai";
+import { GoogleGenAI } from '@google/genai';
 import Fuse from "fuse.js";
-import fs from "fs";
-import path from "path";
+import dotenv from 'dotenv';
 
-const openai = new OpenAI({
-  baseURL: "https://openrouter.ai/api/v1",
-  apiKey: "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",
-});
+dotenv.config();
 
-function sleep(time) {
-  return new Promise((resolve) => setTimeout(resolve, time));
-}
-
-const SYSTEM_PROMPT = `
-You are an AI assistant specialized in farming and agriculture.
-Your goal is to provide the best possible advice and solutions related to farming, crops, soil, irrigation, fertilizers, pest management, livestock, and agricultural technologies.
-
-Workflow:
-- START: The user gives a query related to farming or agriculture.
-- THINK: You must carefully think through the query at least 3 times (THINK, THINK, THINK). 
-          In each step, refine your reasoning to ensure the answer is practical, safe, and useful for farmers. 
-- OUTPUT: Finally, provide the best farming/agriculture solution in clear and simple language.
-
-Rules:
-- Always output strictly in JSON format.
-- Each step must be output separately (one JSON object per step).
-- Use at least 3 THINK steps before giving OUTPUT.
-- No tool calling is allowed (only reasoning and final text-based solution).
-- Keep answers fact-based, practical, and farmer-friendly.
-
-Example:
-START: "What fertilizer should I use for wheat in loamy soil?"
-THINK: "The user is asking about fertilizer recommendation for wheat in loamy soil."
-THINK: "Wheat in loamy soil generally needs nitrogen, phosphorus, and potassium. The common NPK ratio is important."
-THINK: "A balanced fertilizer like 120:60:40 NPK per hectare is often recommended, along with urea for nitrogen."
-OUTPUT: "For wheat in loamy soil, use a fertilizer plan of about 120 kg Nitrogen, 60 kg Phosphorus, and 40 kg Potassium per hectare. Apply urea in split doses for better results."
-
-Output Format:
-{"role":"user","content":"User query here"}
-{"step":"think","content":"First level reasoning"}
-{"step":"think","content":"Second level reasoning"}
-{"step":"think","content":"Third level reasoning"}
-{"step":"output","content":"Final farming/agriculture advice in simple text"}
-`;
+const ai = new GoogleGenAI({}); // Assumes GEMINI_API_KEY is set
 
 async function init(userQuery) {
-  await sleep(1000);
-
-  const messages = [
-    { role: "system", content: SYSTEM_PROMPT },
-    { role: "user", content: userQuery },
-  ];
-
-  while (true) {
+  const simpleSystemPrompt = "You are a helpful AI assistant. Give answer only related to farming and agriculture. Please provide a clear and concise answer to the user's question.Provide answer in within 18 words.";
+  try {
     const response = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages,
+      model: "openai/gpt-oss-120b:free",
+      messages: [
+        { role: "system", content: simpleSystemPrompt },
+        { role: "user", content: userQuery },
+      ],
     });
-
     const replyContent = response.choices[0].message.content;
+    return replyContent;
 
-    // Add assistant reply to conversation
-    messages.push({ role: "assistant", content: replyContent });
-
-    let parsed_response;
-    try {
-      parsed_response = JSON.parse(replyContent);
-    } catch (e) {
-      console.error("Failed to parse JSON:", replyContent);
-      return "Sorry, I couldn’t process the response correctly.";
-    }
-
-    if (parsed_response.step === "think") {
-      continue;
-    }
-    if (parsed_response.step === "output") {
-      console.log(`Output --- ${parsed_response.content}`);
-      return parsed_response.content;
-    }
+  } catch (error) {
+    // If the API call fails, this will catch the error and prevent a crash.
+    console.error("Error calling the AI service:", error.message);
+    
+    // Return a user-friendly error message instead of crashing.
+    return "Sorry, I'm having trouble connecting to the AI right now. Please try again later.";
   }
+}
+async function run(userQuery) {
+  const response = await ai.models.generateContent({
+    model: "gemma-3-27b-it",
+    contents: `${userQuery}.Generate answer within 15 words`,
+  });
+
+  return (response.text); // output is often markdown
 }
 
 export const chat = async (req, res) => {
@@ -94,32 +49,34 @@ export const chat = async (req, res) => {
 
     // Simple keyword match
     const wordMatch = (msg, keyword) => {
-      const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      const regex = new RegExp(`\\b${escaped}\\b`, "i");
-      return regex.test(msg);
+    const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const regex = new RegExp(`\\b${escaped}\\b`, "i");
+    return regex.test(msg);
     };
 
     // Try exact keyword match
-    const matchedItems = chatbot.filter((item) =>
-      item.keywords.some((k) => wordMatch(userMsg, k))
-    );
-    if (matchedItems.length > 0) {
-      predefinedAnswer = matchedItems.map((item) => item.answer).filter(Boolean).join(" ");
-    }
+  const matchedItems = chatbot.filter((item) =>
+    item.keywords.some((k) => wordMatch(userMsg, k))
+  );
 
-    // Fallback: Fuzzy search
+  if (matchedItems.length > 0) {
+    predefinedAnswer = matchedItems.map((item) => item.answer).filter(Boolean).join(" ");
+  } 
+  // 2. If no exact match, fallback to fuzzy search
+  else {
     const fuse = new Fuse(chatbot, { keys: ["keywords"], threshold: 0.3 });
     const fuzzyResults = fuse.search(userMsg);
     if (fuzzyResults.length > 0) {
-        predefinedAnswer = fuzzyResults[0].item.answer;
+      predefinedAnswer = fuzzyResults[0].item.answer;
     }
+  }
 
-    // Call OpenAI
-    const openaiAnswer = await init(message);
+  // 3. If still no answer after both attempts, set to "NOT FOUND"
+  if (!predefinedAnswer) {
+    const openaiAnswer = await run(message);
+    predefinedAnswer = openaiAnswer;
     console.log(openaiAnswer);
-    if(!predefinedAnswer){
-      predefinedAnswer = openaiAnswer;
-    }
+  }
     return res.status(200).json({
       status: true,
       answer: predefinedAnswer,
@@ -131,7 +88,6 @@ export const chat = async (req, res) => {
     });
   }
 };
-
 export const chatsidebar = async (req, res) => {
   try {
     const { id, source } = req.query;
@@ -151,7 +107,7 @@ export const chatsidebar = async (req, res) => {
           };
         })
       );
-      res.json(sidebarList);
+      res.status(200).json(sidebarList);
     } else if (source === "client") {
       const chatRooms = await ChatRoom.find({ clientId: id });
 
@@ -169,7 +125,7 @@ export const chatsidebar = async (req, res) => {
         })
       );
 
-      res.json(sidebarList);
+      res.status(200).json(sidebarList);
     }
   } catch (err) {
     console.error("Error fetching sidebar list:", err);
@@ -202,7 +158,7 @@ export const getMessagesByRoom = async (req, res) => {
 };
 export const sendMessage = async (req, res) => {
   try {
-    const { chatRoomId, senderId, receiverId, text } = req.body;
+    const { chatRoomId, senderId, receiverId, text,source } = req.body;
 
     const chatRoom = await ChatRoom.findById(chatRoomId);
     if (!chatRoom)

@@ -1,5 +1,5 @@
 import express from 'express';
-import { complainForm, details, fetchAdvisors, followRequest, forgotPassword, gender, login, logout, register, } from '../controllers/user_identify.js';
+import { changePassword, complainForm, details, fetchAdvisors, followRequest, forgotPassword, gender, login, logout, register, } from '../controllers/user_identify.js';
 import multer from 'multer';
 import crypto from "crypto"
 import path from 'path'

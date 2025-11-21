@@ -13,7 +13,6 @@ export const Room = () => {
 
   const location = useLocation();
   const { positionId, source } = location.state || {};
-
   const socket = useRef(null);
 
   // 🔌 Connect socket and manage message listener
@@ -42,7 +41,7 @@ export const Room = () => {
   // 📡 Fetch chat rooms on user change
   useEffect(() => {
     const fetchChatRooms = async () => {
-      try {
+      try {                                               // ChatSideBar
         const response = await axios.get(
           `http://localhost:8080/chat/chatroom?id=${positionId}&source=${source}`
         );
@@ -62,7 +61,7 @@ export const Room = () => {
   // 📨 Fetch messages when chat selected
   const onSelectChat = async (chatRoomId, partnerId) => {
     try {
-      const res = await axios.get(`http://localhost:8080/chat/messages/${chatRoomId}`);
+      const res = await axios.get(`http://localhost:8080/chat/messages/${chatRoomId}`);  //getMessageByRoom
       setMessages(res.data);
       setSelectedChat({ chatRoomId, partnerId });
 
@@ -87,6 +86,7 @@ export const Room = () => {
       senderId: positionId,
       receiverId: partnerId,
       text: newMessage,
+      source,
     };
 
     try {

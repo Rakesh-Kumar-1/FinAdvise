@@ -55,6 +55,9 @@ const Auth = () => {
       if (role === 1) {
         if (user.password === user.confirm) {
           const message = await axios.post('http://localhost:8080/user/register', user);
+          if(message.data.message === "User already exists with this email"){
+            alert("User already exists");
+          }
           if(message.data.success === true){
             navigate("/front");
           }

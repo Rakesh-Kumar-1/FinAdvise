@@ -325,6 +325,7 @@ const Front = () => {
           "http://localhost:8080/user/fetch-advisor"
         );
         setAdvisors(response.data.info);
+        // console.log(typeof(response.data.info));
         dispatch(addUser(response.data.info));
       } catch (error) {
         console.error("Error fetching advisors:", error);
