@@ -19,7 +19,6 @@ import AdvisorDeta from './Pages/Component/AdvisorDeta'
 import { TranscationRecords } from './Pages/Component/TranscationRecords'
 import ChatbotButton from './Pages/Component/ChatbotButton'
 import { Room } from './Pages/Component/Room'
-import LandingPage from './Pages/LandingPage'
 import TranscationManager from './Pages/Manager/TranscationManager'
 const Pages = () => {
   return (
