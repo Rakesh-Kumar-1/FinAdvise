@@ -3,7 +3,7 @@ import '../CSS/Auth.css'
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import { FaMeetup } from "react-icons/fa";
-import { GiFarmTractor } from "react-icons/gi";
+import { GiCrystalGrowth } from "react-icons/gi";
 import { useContext } from 'react';
 import { UserContext } from './Context/UserContext';
 import { Phone } from 'lucide-react';
@@ -91,7 +91,7 @@ const Auth = () => {
     <div className='auth-body'>
     <div className="login-container">
       <div className="profile-icon">
-      <GiFarmTractor className='logo'/>
+      <GiCrystalGrowth className='logo'/>
       </div>
       {role === 0 ? (
         <form onSubmit={loginSubmit}>

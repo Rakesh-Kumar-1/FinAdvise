@@ -9,10 +9,10 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const ai = new GoogleGenAI({}); // Assumes GEMINI_API_KEY is set
+const ai = new GoogleGenAI({});
 
 async function init(userQuery) {
-  const simpleSystemPrompt = "You are a helpful AI assistant. Give answer only related to farming and agriculture. Please provide a clear and concise answer to the user's question.Provide answer in within 18 words.";
+  const simpleSystemPrompt = "You are a helpful AI assistant. Give answer only related to finanace. Please provide a clear and concise answer to the user's question.Provide answer in within 18 words.";
   try {
     const response = await openai.chat.completions.create({
       model: "openai/gpt-oss-120b:free",
@@ -25,10 +25,7 @@ async function init(userQuery) {
     return replyContent;
 
   } catch (error) {
-    // If the API call fails, this will catch the error and prevent a crash.
     console.error("Error calling the AI service:", error.message);
-    
-    // Return a user-friendly error message instead of crashing.
     return "Sorry, I'm having trouble connecting to the AI right now. Please try again later.";
   }
 }
@@ -37,8 +34,7 @@ async function run(userQuery) {
     model: "gemma-3-27b-it",
     contents: `${userQuery}.Generate answer within 15 words`,
   });
-
-  return (response.text); // output is often markdown
+  return (response.text);
 }
 
 export const chat = async (req, res) => {

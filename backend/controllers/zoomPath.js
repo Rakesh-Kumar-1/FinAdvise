@@ -7,7 +7,6 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Replace with your Zoom App Credentials
 const zoomAccountId = process.env.ZOOMACCOUNTID
 const zoomClientId = process.env.ZOOMCLIENTID
 const zoomClientSecret = process.env.ZOOMCLIENTSECRET
@@ -50,11 +49,11 @@ const createZoomMeeting = async ({ topic, date, time, participants }) => {
         settings: {
             host_video: false,
             participant_video: true,
-            join_before_host: true, // ✅ allow users to join without host
-            waiting_room: false,    // ✅ don't block users
+            join_before_host: true, //  allow users to join without host
+            waiting_room: false,    //  don't block users
             mute_upon_entry: true,
-            approval_type: 1,       // ✅ automatic join
-            auto_recording: "cloud", // ✅ save video in Zoom account
+            approval_type: 1,       //  automatic join
+            auto_recording: "cloud", //  save video in Zoom account
             meeting_authentication: false,
             meeting_invitees: participants.map(email => ({ email })),
         },
@@ -71,17 +70,15 @@ const createZoomMeeting = async ({ topic, date, time, participants }) => {
 
     const data = await response.json();
 
-    // ✅ Return public meeting link for participants
+    // Return public meeting link for participants
     return {
         meeting_id: data.id,
         topic: data.topic,
         start_time: data.start_time,
-        join_url: data.join_url, // ✅ share this with both participants
-        start_url: data.start_url, // ✅ for host, optional here
+        join_url: data.join_url, // share this with both participants
+        start_url: data.start_url, // for host, optional here
     };
 };
-
-// API Route
 
 export const zoomService = async (req, res) => {
     try {

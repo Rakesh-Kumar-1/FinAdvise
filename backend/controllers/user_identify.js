@@ -1,4 +1,5 @@
 import RedisClient from "../cache.js";
+import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import fs from 'fs';
 import { fileURLToPath } from "url";
@@ -10,26 +11,27 @@ import jwt from 'jsonwebtoken';
 import { Complain } from "../models/complain_details.js";
 import { PaymentRecords } from "../models/payments_records.js";
 import { ChatRoom } from "../models/chatroom.js";
-import { error } from "console";
 import axios from 'axios';
 import twilio from "twilio";
-// import client  from "twilio/lib/base/BaseTwilio.js";
-import client from 'twilio'
-// import { permission } from "process";
 
 const handleResponse = (res,status,message,success,info = null) => {
     return res.status(status).json({message,success,info});
 }
 export const register = async (req, res, next) => {
+    const session = await mongoose.startSession();
+
     try {
+        session.startTransaction(); 
         const { name, email, password, phone } = req.body;
 
         if (!name || !email || !password || !phone) {
+            await session.abortTransaction(); 
             return handleResponse(res, 400, "All fields are required", false);
         }
 
-        const existingUser = await User.findOne({ email });
+        const existingUser = await User.findOne({ email }).session(session);
         if (existingUser) {
+            await session.abortTransaction();
             return handleResponse(res, 201, "User already exists with this email", false);
         }
 
@@ -38,21 +40,29 @@ export const register = async (req, res, next) => {
         const data = { name };
         const url = 'https://gender-detection-m29y.onrender.com/predict';
         const urlEncodedData = new URLSearchParams(data);
-        const response = await axios.post(url, urlEncodedData);
+        const response = await axios.post(url, urlEncodedData);  
 
         let genderValue = response.data.gender_prediction === 'm' ? "Male" : "Female";
 
-        const newUser = await User.create({
-            name,
-            email,
-            password: hashedPassword,
-            gender: genderValue,
-            phone,
-        });
+        await User.create(
+            {
+                name,
+                email,
+                password: hashedPassword,
+                gender: genderValue,
+                phone,
+            }
+        );
+
+        await session.commitTransaction(); 
+        session.endSession();
 
         return handleResponse(res, 201, "Account created successfully", true);
+
     } catch (error) {
         console.log("Registration Error:", error);
+        await session.abortTransaction();
+        session.endSession();
         next(error);
     }
 };
@@ -123,8 +133,7 @@ export const logout = async (req, res) => {
     }
 }
 export const fetchAdvisors = async (req, res, next) => {
-    const set = new Set();
-    
+    const set = new Set();   
     try {
         const redisAdvisor = await RedisClient.hgetall('advisorlist');
         for(const item in redisAdvisor){
@@ -170,7 +179,6 @@ export const managerinfo = async (req, res,next) => {
     try {
         const manager = await Manager.findById(req.params.id);
         if (!manager) return res.status(404).json({ message: 'Manager not found' });
-        // return res.status(200).json(manager);
         return handleResponse(res,200,"Manager not found",true,manager);
     } catch (error) {
         next(error);
@@ -179,22 +187,18 @@ export const managerinfo = async (req, res,next) => {
 export const fecthinactive = async (req, res,next) => {
     try {
         const advisors = await Advisor.find({ status: 'inactive' });
-        // return res.status(200).json({ success: true, data: advisors });
         return handleResponse(res,200,"Fetched inactive advisors",true,advisors);
     } catch (error) {
         console.error('Error fetching advisors:', error);
-        // return res.status(500).json({ success: false, message: 'Server Error' });
         next(error);
     }
 }
 export const fecthactive = async (req, res,next) => {
     try {
         const advisors = await Advisor.find({ status: 'active' });
-        // return res.status(200).json({ success: true, data: advisors });
         return handleResponse(res,200,"Fetched active advisors",true,advisors);
     } catch (error) {
         console.error('Error fetching advisors:', error);
-        // return res.status(500).json({ success: false, message: 'Server Error' });
         next(error);
     }
 }
@@ -228,10 +232,8 @@ export const complain = async (req, res,next) => {
         complain.status = 'Solved';
         complain.feedback = feedback;
         await complain.save();
-        //return res.status(200).json({ sucess: true, message: 'Delete sucessfully' })
         return handleResponse(res,200,"Delete sucessfully",true);
     } catch (error) {
-        //return res.status(500).json({ success: false, message: 'Server Error' });
         next(error);
     }
 }
@@ -330,17 +332,14 @@ export const approveAdvisor = async (req, res,next) => {
     try {
         const advisor = await Advisor.findById(req.params.id);
         if (!advisor) {
-            //return res.status(500).json({ status: true, message: 'Advisor not found' });
             return handleResponse(res,404,"Advisor not found",false);
         } else {
             advisor.permission = 'allow';
             await advisor.save();
-            //return res.status(200).json({ status: true, message: 'Advisor created successfully' });
             return handleResponse(res,200,"Advisor created successfully",true);
         }
     }
     catch (error) {
-        //return res.status(500).json({ status: false, message: 'Server error' });
         next(error);
     }
 }
@@ -378,22 +377,20 @@ export const disapproveAdvisor = async (req, res,next) => {
 };
 export const clientbill = async (req, res, next) => {
     const { id, date, time, clientId, transactionId, price, method } = req.body;
+    const session = await mongoose.startSession();
     try {
-        // Find the advisor to validate the time slot
+        session.startTransaction();
         const advisor = await Advisor.findById(id);
         if (!advisor) {
+            await session.abortTransaction();
             return handleResponse(res, 400, 'Advisor not found', false);
         }
-
         const normalizedDay = date.toLowerCase();
-
         // Check for time slot availability
         if (!advisor.schedule[normalizedDay] || !advisor.schedule[normalizedDay].includes(time)) {
+            await session.abortTransaction();
             return handleResponse(res, 400, `Time slot not available on ${normalizedDay}`, false);
         }
-
-        // --- All checks passed, perform atomic updates ---
-
         // Record payment
         await PaymentRecords.create({
             transactionId,
@@ -408,71 +405,56 @@ export const clientbill = async (req, res, next) => {
         // Create chat room
         const room = await ChatRoom.findOne({ clientId, advisorId: id });
         if (!room) {
+            await session.abortTransaction();
             await ChatRoom.create({ clientId, advisorId: id, createdAt: new Date() });
         }
-
-        // Atomically update both the advisor and user documents in a single operation
-        // This is crucial for data integrity. 
+ 
         const advisorUpdateResult = await Advisor.findByIdAndUpdate(
             id,
             {
                 // Atomically remove the time slot from the schedule and add it to tempBlockedSlots
                 $pull: { [`schedule.${normalizedDay}`]: time },
                 $push: { tempBlockedSlots: { day: normalizedDay, time } },
-                // Use the $inc operator to atomically increment the client count
+                
                 $inc: { client: 1 }
             },
-            { new: true, runValidators: true } // Return the updated document and run validators
+            { new: true, runValidators: true } 
         );
-        
-        // This is another way to update, if you prefer to use the document instance
-        // advisor.client++;
-        // await advisor.save();
-        // The first method is generally better as it's a single, atomic operation.
 
         await User.findByIdAndUpdate(clientId, { $inc: { totalmet: 1 } });
 
         if (!advisorUpdateResult) {
-            // This case would be rare but is good practice to handle
+            await session.abortTransaction();
             return handleResponse(res, 500, 'Failed to update advisor document', false);
         }
-
+        await session.commitTransaction();
+        session.endSession();
         return handleResponse(res, 200, "Slot booked", true);
 
     } catch (err) {
         console.error('❌ Client bill error:', err.message);
-        // It's good practice to send an error response in the catch block
+        await session.abortTransaction();
+        session.endSession();
         next(err);
     }
 };
 export const bookdschedule = async (req, res,next) => {
-  const id = req.query.id;  
-
+  const id = req.query.id;
   try {
     const advisor = await Advisor.findById(id);
     if (!advisor) {
-      //return res.status(404).json({ status: false, msg: 'Advisor not found' });
       return handleResponse(res,404,"Advisor not found",false);
     }
-
-    return res.status(200).json({
-      status: true,
-      info: advisor.tempBlockedSlots || [],
-    });
-
+    return handleResponse(res,200,"book successfully",true,advisor.tempBlockedSlots || []);
   } catch (err) {
-    //console.error(err);
-    //return res.status(500).json({ status: false, error: err.message });
     next(err);
   }
 };
 export const transactionManager = async (req, res,next) => {
     try {
         const data = await PaymentRecords.find({});
-        //return res.status(200).json({ data, message: "Data fetched successfully" });
         return handleResponse(res,200,"Data fetched successfully",true,data);
     } catch (err) {
-        //return res.status(500).json({ message: "Failed to fetch data", error: err.message || err });
         next(err);
     }
 };
