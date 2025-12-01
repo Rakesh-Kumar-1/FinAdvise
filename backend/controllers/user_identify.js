@@ -171,7 +171,6 @@ export const fetchManager = async (req, res,next) => {
         const managers = await Manager.find({});
         return handleResponse(res,200,"Advisor found",true,managers);
     } catch (error) {
-        console.error('Error fetching advisors:', error);
         next(error);
     }
 };
