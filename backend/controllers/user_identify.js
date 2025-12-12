@@ -216,11 +216,9 @@ export const complaintype = async (req, res,next) => {
         const role = req.params.name;
         console.log(role);
         const complain = await Complain.find({ role: req.params.name, status: 'Unsolved' });
-        // return res.status(200).json({ success: true, data: complain });
         return handleResponse(res,200,"Fetched advisors complain",true,complain);
     } catch (error) {
         console.error('Error fetching advisors complain:', error);
-        // return res.status(500).json({ success: false, message: 'Server Error' });
         next(error);
     }
 }
@@ -302,11 +300,9 @@ export const followRequest = async (req, res,next) => {
         console.log(user, id);
         const followed = await User.findById(user);
         if (!followed) {
-            //return res.status(404).json({ status: false, message: 'User not found' });
             return handleResponse(res,404,"User not found",false);
         }
 
-        // Check if already following
         if (followed.follows.includes(id)) {
             // Unfollow
             followed.follows = followed.follows.filter(item => item !== id);
@@ -322,8 +318,6 @@ export const followRequest = async (req, res,next) => {
         }
 
     } catch (error) {
-        //console.error("Follow Request Error:", error);
-        //return res.status(500).json({ status: false, message: 'Server error' });
         next(error);
     }
 };
@@ -348,10 +342,7 @@ export const disapproveAdvisor = async (req, res,next) => {
         const __dirname = path.dirname(__filename);
         const uploadDir = path.join(__dirname, '..', 'files');
         const advisor = await Advisor.findById(req.params.id);
-
-        // Check the folder exists or not
-        const files = fs.readdirSync(uploadDir);
-        //     
+        const files = fs.readdirSync(uploadDir);    
         files.map((img, index) => {
             if (advisor.images.includes(img)) {
                 const __imagename = path.join(uploadDir, img)
@@ -360,17 +351,12 @@ export const disapproveAdvisor = async (req, res,next) => {
         })
 
         const deleted = await Advisor.findByIdAndDelete(req.params.id);
-
         if (!deleted) {
-            //return res.status(404).json({ status: false, message: 'Advisor not found' });
             return handleResponse(res,404,"Advisor not found",false);
         }
-
-        //return res.status(200).json({ status: true, message: 'Advisor deleted successfully' });
         return handleResponse(res,200,"Advisor deleted successfully",true);
     } catch (error) {
         console.error('Disapproval error:', error);
-        //return res.status(500).json({ status: false, message: 'Server error' });
         next(error);
     }
 };
@@ -433,8 +419,9 @@ export const clientbill = async (req, res, next) => {
     } catch (err) {
         console.error('❌ Client bill error:', err.message);
         await session.abortTransaction();
-        session.endSession();
         next(err);
+    }finally {
+        session.endSession();   // ALWAYS runs
     }
 };
 export const bookdschedule = async (req, res,next) => {

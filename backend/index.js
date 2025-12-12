@@ -24,7 +24,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new SocketIOServer(server, {
   cors: {
-    origin: 'http://localhost:5173', // Frontend origin
+    origin: ['http://localhost:5173','https://finadvise-frontend.onrender.com'], // Frontend origin
     methods: ['GET', 'POST'],
     credentials: true
   }
