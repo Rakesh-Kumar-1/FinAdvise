@@ -82,16 +82,16 @@ export const login = async (req, res, next) => {
             return handleResponse(res,200,"Login Successfully Advisor",false,advisor);
         }
         // Admin login
-        if (email === "admin@gmail.com" && password === "admin") {
+        else if (email === "admin@gmail.com" && password === "admin") {
             return handleResponse(res,200,"Login Successfully Admin",true);
         }
-        if (email === "priya.sharma@gmail.com" && password === "manager01") {
+        else if (email === "priya.sharma@gmail.com" && password === "manager01") {
             return handleResponse(res,200,"Login Successfully Manager",true);
         }
-        if (!user && !manager) {
+        else if (!user && !manager) {
             return handleResponse(res,400,"Enter valid email or password",false);
         }
-        if(user){
+        else if(user){
             return handleResponse(res,201,"Login Successfully User",true,user);
         }
 
