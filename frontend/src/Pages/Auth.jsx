@@ -38,7 +38,7 @@ const Auth = () => {
         const message = await axios.post("https://finadvise-backend.onrender.com/user/login", user);
         console.log(message)
         setPosition(message.data.info);
-        setPosition((prev) => ({...prev,gender: prev.gender == 'm' ? 'Male' : 'Female'}));
+        setPosition((prev) => ({...prev,gender: (prev.gender ?? 'm') === 'm' ? 'Male' : 'Female'}));
         if(message.data.message === "Login Successfully User"){
           navigate("/front");
         }

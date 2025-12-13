@@ -1,5 +1,5 @@
 import express from 'express';
-import { changePassword, complainForm, details, fetchAdvisors, followRequest, forgotPassword, gender, login, logout, register, } from '../controllers/user_identify.js';
+import { changePassword, complainForm, details, fetchAdvisors, followRequest, forgotPassword, gender, login, register, } from '../controllers/user_identify.js';
 import multer from 'multer';
 import crypto from "crypto"
 import path from 'path'
@@ -15,9 +15,9 @@ import { mail } from '../controllers/mailsend.js';
 const router = express.Router();
 
 router.post('/register', register);
-router.post('/forgot-password',forgotPassword)
 router.post('/login', login);
-router.get('/logout', logout);
+// router.get('/logout', logout);
+router.post('/forgot-password',forgotPassword)
 router.get('/fetch-advisor',fetchAdvisors)
 router.get('/advisor/:id',details)
 router.post('/complainForm',complainForm)

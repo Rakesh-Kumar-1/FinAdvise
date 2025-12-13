@@ -93,6 +93,7 @@ io.on('connection', (socket) => {
 import './middleware/restoreSlots.js';
 import { ChatRoom } from './models/chatroom.js';
 import { errorHandling } from './middleware/errorHandling.js';
+import { isAuthenticated } from './middleware/isAuthenticated.js';
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -109,6 +110,7 @@ const __dirname = path.dirname(__filename);
 app.use('/files', express.static(path.join(__dirname, 'files')));
 
 // Routes
+app.use(isAuthenticated);
 app.use('/user', userRoute);
 app.use('/admin', adminRoute);
 app.use('/manager', managerRoute);

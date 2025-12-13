@@ -69,86 +69,151 @@ export const register = async (req, res, next) => {
 export const login = async (req, res, next) => {
     try {
         const { email, password } = req.body;
+
         if (!email || !password) {
-            return handleResponse(res,400,"All fields are required",false);
+            return handleResponse(res, 400, "All fields are required", false);
         }
 
+        // 1️⃣ ADMIN LOGIN (hardcoded)
+        if (email === "admin@gmail.com" && password === "admin") {
+            const token = jwt.sign({ role: "admin",email,password }, process.env.SECRET_KEY, { expiresIn: "1d" });
+
+            return res.status(200).cookie("token", token, {
+                    maxAge: 24 * 60 * 60 * 1000,
+                    httpOnly: true,
+                    sameSite: "strict"})
+                .json({
+                    message: "Login Successfully Admin",
+                    role: "admin",
+                    success: true});
+        }
+
+        // 2️⃣ MANAGER LOGIN (hardcoded)
+        if (email === "priya.sharma@gmail.com" && password === "manager01") {
+            const token = jwt.sign({ role: "manager",email,password }, process.env.SECRET_KEY, { expiresIn: "1d" });
+
+            return res.status(200)
+                .cookie("token", token, {
+                    maxAge: 24 * 60 * 60 * 1000,
+                    httpOnly: true,
+                    sameSite: "strict"
+                })
+                .json({
+                    message: "Login Successfully Manager",
+                    role: "manager",
+                    success: true
+                });
+        }
+
+        // 3️⃣ Check DB for advisor/user/manager (email search)
+        const advisor = await Advisor.findOne({ email });
         const user = await User.findOne({ email });
         const manager = await Manager.findOne({ email });
-        const advisor = await Advisor.findOne({ email });
 
-        // Advisor login with default password
-        if (advisor && email === advisor.email && password === "manager0000") {
-            return handleResponse(res,200,"Login Successfully Advisor",false,advisor);
+        // 4️⃣ ADVISOR LOGIN (default password support)
+        if (advisor) {
+            if (password !== "manager0000") {
+                return handleResponse(res, 400, "Incorrect password", false);
+            }
+
+            const token = jwt.sign({ role: "advisor", id: advisor._id,name:advisor.fullname }, process.env.SECRET_KEY, { expiresIn: "1d" });
+
+            return res.status(200)
+                .cookie("token", token, {
+                    maxAge: 24 * 60 * 60 * 1000,
+                    httpOnly: true,
+                    sameSite: "strict"
+                })
+                .json({
+                    message: "Login Successfully Advisor",
+                    info: advisor,
+                    role: "advisor",
+                    success: true
+                });
         }
-        // Admin login
-        else if (email === "admin@gmail.com" && password === "admin") {
-            return handleResponse(res,200,"Login Successfully Admin",true);
+
+        // 5️⃣ USER LOGIN
+        if (user) {
+            const isPasswordMatch = await bcrypt.compare(password, user.password);
+
+            if (!isPasswordMatch) {
+                return handleResponse(res, 401, "Incorrect email or password", false);
+            }
+
+            const token = jwt.sign({ role: "user", id: user._id,name:user.name }, process.env.SECRET_KEY, { expiresIn: "1d" });
+
+            return res.status(200)
+                .cookie("token", token, {
+                    maxAge: 24 * 60 * 60 * 1000,
+                    httpOnly: true,
+                    sameSite: "strict"
+                })
+                .json({
+                    message: "Login Successfully User",
+                    info: user,
+                    role: "user",
+                    success: true
+                });
         }
-        else if (email === "priya.sharma@gmail.com" && password === "manager01") {
-            return handleResponse(res,200,"Login Successfully Manager",true);
+
+        // 6️⃣ MANAGER LOGIN (DB manager)
+        if (manager) {
+            const isPasswordMatch = await bcrypt.compare(password, manager.password);
+
+            if (!isPasswordMatch) {
+                return handleResponse(res, 401, "Incorrect email or password", false);
+            }
+
+            const token = jwt.sign({ role: "manager", id: manager._id }, process.env.SECRET_KEY, { expiresIn: "1d" });
+
+            return res.status(200)
+                .cookie("token", token, {
+                    maxAge: 24 * 60 * 60 * 1000,
+                    httpOnly: true,
+                    sameSite: "strict"
+                })
+                .json({
+                    message: "Login Successfully Manager",
+                    info: manager,
+                    role: "manager",
+                    success: true
+                });
         }
-        else if (!user && !manager) {
-            return handleResponse(res,400,"Enter valid email or password",false);
-        }
-        else if(user){
-            return handleResponse(res,201,"Login Successfully User",true,user);
-        }
 
-        // const isPasswordMatch = user
-        //     ? await bcrypt.compare(password, user.password)
-        //     : await bcrypt.compare(password, manager.password);
+        // If no user found
+        return handleResponse(res, 400, "Enter valid email or password", false);
 
-        // if (!isPasswordMatch) {
-        //     return handleResponse(res,401,"Incorrect email or password",false);
-        // }
-
-        const tokenData = {
-            userId: user ? user._id : manager._id
-        };
-
-        const token = jwt.sign(tokenData, process.env.SECRET_KEY, { expiresIn: '1d' });
-
-        return res.status(200).cookie("token", token, {
-            maxAge: 1 * 24 * 60 * 60 * 1000,
-            httpOnly: true,
-            sameSite: 'strict'
-        }).json({
-            message: user ? "Login Successfully User" : "Login Successfully Manager",
-            info: user || manager,
-            success: true
-        });
     } catch (error) {
         next(error);
     }
 };
-export const logout = async (req, res) => {
-    try {
-        res.status(200).cookie('token', '', { maxAge: 0 }).json({
-            message: "Logout Successfully"
-        });
-    }
-    catch (error) {
-        console.log(error)
-    }
-}
+// export const logout = async (req, res) => {
+//     try {
+//         res.status(200).cookie('token', '', { maxAge: 0 }).json({
+//             message: "Logout Successfully"
+//         });
+//     }
+//     catch (error) {
+//         console.log(error)
+//     }
+// }
 export const fetchAdvisors = async (req, res, next) => {
     const set = new Set();   
     try {
-        const redisAdvisor = await RedisClient.hgetall('advisorlist');
-        for(const item in redisAdvisor){
-            set.add(JSON.parse(redisAdvisor[item]));
-        }
-        if (set.size > 0) {
-            const redisAdvisorData = [...set];
-            return handleResponse(res, 200, "Fetched Advisor (from cache)", true, redisAdvisorData);
-        }
+        // const redisAdvisor = await RedisClient.hgetall('advisorlist');
+        // for(const item in redisAdvisor){
+        //     set.add(JSON.parse(redisAdvisor[item]));
+        // }
+        // if (set.size > 0) {
+        //     const redisAdvisorData = [...set];
+        //     return handleResponse(res, 200, "Fetched Advisor (from cache)", true, redisAdvisorData);
+        // }
         const advisor = await Advisor.find({ permission: 'allow' });
-        if (advisor && advisor.length > 0) {
-            await Promise.all(advisor.map(async (item) => {
-                await RedisClient.hset('advisorlist', item._id, JSON.stringify(item));
-            }));
-        }
+        // if (advisor && advisor.length > 0) {
+        //     await Promise.all(advisor.map(async (item) => {
+        //         await RedisClient.hset('advisorlist', item._id, JSON.stringify(item));
+        //     }));
+        // }
         return handleResponse(res, 200, "Fetched Advisors (from DB)", true, advisor);
     } catch (error) {
         next(error);

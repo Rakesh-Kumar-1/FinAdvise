@@ -325,7 +325,6 @@ const Front = () => {
           "https://finadvise-backend.onrender.com/user/fetch-advisor"
         );
         setAdvisors(response.data.info);
-        // console.log(typeof(response.data.info));
         dispatch(addUser(response.data.info));
       } catch (error) {
         console.error("Error fetching advisors:", error);
