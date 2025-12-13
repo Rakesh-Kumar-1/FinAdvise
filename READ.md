@@ -80,32 +80,6 @@ FinAdvice is a full‑stack financial advisory platform that connects **clients*
 
 ---
 
-## 📂 Project Structure
-
-```
-finadvice/
-│
-├── backend/
-│   ├── controllers/
-│   ├── routes/
-│   ├── models/
-│   ├── middleware/
-│   ├── files/            # Uploaded advisor documents
-│   └── server.js
-│
-├── frontend/
-│   ├── src/
-│   │   ├── Pages/
-│   │   ├── Components/
-│   │   ├── Services/
-│   │   └── App.jsx
-│   └── public/
-│
-└── README.md
-```
-
----
-
 ## 🔄 Booking Flow
 
 1. Client selects an advisor
@@ -133,84 +107,32 @@ finadvice/
 Create a `.env` file in the backend directory:
 
 ````env
-PORT=5000
-MONGO_URI=your_mongodb_connection
-JWT_SECRET=your_jwt_secret
+MONGO_URI
+JWT_SECRET
 
 # Redis
-REDIS_HOST=localhost
-REDIS_PORT=6379
+REDIS_HOST
+REDIS_PORT
 
 # RabbitMQ
-RABBITMQ_URL=amqp://localhost
+RABBITMQ_URL
 
 # Email
-EMAIL_USER=your_email
-EMAIL_PASS=your_email_password
+EMAIL_USER
+EMAIL_PASS
 
 # Zoom
-ZOOM_API_KEY=your_zoom_api_key
-ZOOM_API_SECRET=your_zoom_api_secret
-```env
-PORT=5000
-MONGO_URI=your_mongodb_connection
-JWT_SECRET=your_jwt_secret
-EMAIL_USER=your_email
-EMAIL_PASS=your_email_password
-ZOOM_API_KEY=your_zoom_api_key
-ZOOM_API_SECRET=your_zoom_api_secret
+ZOOM_API_KEY
+ZOOM_API_SECRET
 ````
 
 ---
-
-## ▶️ Installation & Setup
-
-### 1️⃣ Clone the Repository
-
-```bash
-git clone https://github.com/your-username/finadvice.git
-cd finadvice
-```
-
-### 2️⃣ Backend Setup
-
-```bash
-cd backend
-npm install
-npm start
-```
-
-### 3️⃣ Frontend Setup
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
----
-
-## 🧪 Future Enhancements
-
-* Live video calling using Mediasoup SFU
-* Admin dashboard for advisor approvals
-* AI‑based advisor recommendations
-* Push notifications
-* Mobile app support
-
----
-
 ## 👨‍💻 Author
 
-**Manish Kumar**
+**Rakesh Kumar**
 B.Tech – Computer Science
 Full Stack Developer
 
 * LinkedIn: *(add your LinkedIn)*
-* GitHub: *(add your GitHub)*
 
 ---
-
-## ⭐ Support
-
-If you like this project, consider giving it a ⭐ on GitHub. It helps a lot!
