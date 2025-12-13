@@ -14,7 +14,8 @@ const Complain = () => {
     const fetchData = async() => {
       try {
         const complain = await axios.get(
-          `https://finadvise-backend.onrender.com/manager/complaintype/${name}`
+          `https://finadvise-backend.onrender.com/manager/complaintype/${name}`,
+          { withCredentials: true }
         );
         setComplain(complain.data.info);
       } catch (err) {
@@ -31,7 +32,7 @@ const Complain = () => {
         feedback,
         name,
         index,
-      });
+      }, { withCredentials: true });
       console.log(res);
     } catch (err) {
       console.log(err);

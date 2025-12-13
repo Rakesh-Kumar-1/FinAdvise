@@ -68,125 +68,99 @@ export const register = async (req, res, next) => {
 };
 export const login = async (req, res, next) => {
     try {
-        const { email, password } = req.body;
-
-        if (!email || !password) {
-            return handleResponse(res, 400, "All fields are required", false);
-        }
-
-        // 1️⃣ ADMIN LOGIN (hardcoded)
-        if (email === "admin@gmail.com" && password === "admin") {
-            const token = jwt.sign({ role: "admin",email,password }, process.env.SECRET_KEY, { expiresIn: "1d" });
-
-            return res.status(200).cookie("token", token, {
-                    maxAge: 24 * 60 * 60 * 1000,
-                    httpOnly: true,
-                    sameSite: "strict"})
-                .json({
-                    message: "Login Successfully Admin",
-                    role: "admin",
-                    success: true});
-        }
-
-        // 2️⃣ MANAGER LOGIN (hardcoded)
-        if (email === "priya.sharma@gmail.com" && password === "manager01") {
-            const token = jwt.sign({ role: "manager",email,password }, process.env.SECRET_KEY, { expiresIn: "1d" });
-
-            return res.status(200)
-                .cookie("token", token, {
-                    maxAge: 24 * 60 * 60 * 1000,
-                    httpOnly: true,
-                    sameSite: "strict"
-                })
-                .json({
-                    message: "Login Successfully Manager",
-                    role: "manager",
-                    success: true
-                });
-        }
-
-        // 3️⃣ Check DB for advisor/user/manager (email search)
+      const { email, password } = req.body;
+  
+      if (!email || !password) {
+        return handleResponse(res, 400, "All fields are required", false);
+      }
+  
+      let user = null;
+      let role = null;
+  
+      /* ================= ADMIN (HARDCODED) ================= */
+      if (email === "admin@gmail.com" && password === "admin") {
+        role = "Admin";
+        user = { id: "admin-id", name: "Admin" };
+      }
+  
+      /* ================= MANAGER (HARDCODED) ================= */
+      else if (email === "priya.sharma@gmail.com" && password === "manager01") {
+        role = "Manager";
+        user = { id: "manager-id", name: "Priya Sharma" };
+      }
+  
+      /* ================= DATABASE USERS ================= */
+      else {
+        // Find user in DB
         const advisor = await Advisor.findOne({ email });
-        const user = await User.findOne({ email });
+        const normalUser = await User.findOne({ email });
         const manager = await Manager.findOne({ email });
-
-        // 4️⃣ ADVISOR LOGIN (default password support)
+  
         if (advisor) {
-            if (password !== "manager0000") {
-                return handleResponse(res, 400, "Incorrect password", false);
-            }
-
-            const token = jwt.sign({ role: "advisor", id: advisor._id,name:advisor.fullname }, process.env.SECRET_KEY, { expiresIn: "1d" });
-
-            return res.status(200)
-                .cookie("token", token, {
-                    maxAge: 24 * 60 * 60 * 1000,
-                    httpOnly: true,
-                    sameSite: "strict"
-                })
-                .json({
-                    message: "Login Successfully Advisor",
-                    info: advisor,
-                    role: "advisor",
-                    success: true
-                });
+          role = "Advisor";
+          user = advisor;
+  
+          // default password (should be changed later)
+          if (password !== "manager0000") {
+            return handleResponse(res, 401, "Incorrect password", false);
+          }
         }
-
-        // 5️⃣ USER LOGIN
-        if (user) {
-            const isPasswordMatch = await bcrypt.compare(password, user.password);
-
-            if (!isPasswordMatch) {
-                return handleResponse(res, 401, "Incorrect email or password", false);
-            }
-
-            const token = jwt.sign({ role: "user", id: user._id,name:user.name }, process.env.SECRET_KEY, { expiresIn: "1d" });
-
-            return res.status(200)
-                .cookie("token", token, {
-                    maxAge: 24 * 60 * 60 * 1000,
-                    httpOnly: true,
-                    sameSite: "strict"
-                })
-                .json({
-                    message: "Login Successfully User",
-                    info: user,
-                    role: "user",
-                    success: true
-                });
+  
+        else if (normalUser) {
+          role = "User";
+          user = normalUser;
+  
+          const isMatch = await bcrypt.compare(password, user.password);
+          if (!isMatch) {
+            return handleResponse(res, 401, "Incorrect email or password", false);
+          }
         }
-
-        // 6️⃣ MANAGER LOGIN (DB manager)
-        if (manager) {
-            const isPasswordMatch = await bcrypt.compare(password, manager.password);
-
-            if (!isPasswordMatch) {
-                return handleResponse(res, 401, "Incorrect email or password", false);
-            }
-
-            const token = jwt.sign({ role: "manager", id: manager._id }, process.env.SECRET_KEY, { expiresIn: "1d" });
-
-            return res.status(200)
-                .cookie("token", token, {
-                    maxAge: 24 * 60 * 60 * 1000,
-                    httpOnly: true,
-                    sameSite: "strict"
-                })
-                .json({
-                    message: "Login Successfully Manager",
-                    info: manager,
-                    role: "manager",
-                    success: true
-                });
+  
+        else if (manager) {
+          role = "Manager";
+          user = manager;
+  
+          const isMatch = await bcrypt.compare(password, user.password);
+          if (!isMatch) {
+            return handleResponse(res, 401, "Incorrect email or password", false);
+          }
         }
-
-        // If no user found
-        return handleResponse(res, 400, "Enter valid email or password", false);
-
+  
+        else {
+          return handleResponse(res, 401, "Invalid email or password", false);
+        }
+      }
+  
+      /* ================= CREATE JWT ================= */
+      const token = jwt.sign(
+        {
+          id: user.id || user._id,
+          role
+        },
+        process.env.SECRET_KEY,
+        { expiresIn: "1d" }
+      );
+  
+      /* ================= SET COOKIE ================= */
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: true,
+        maxAge: 24 * 60 * 60 * 1000,
+        sameSite: "none" // important for frontend-backend
+      });
+  
+      return res.status(200).json({
+        message: `Login Successfully ${role}`,
+        role,
+        success: true,
+        info:user
+      });
+  
     } catch (error) {
-        next(error);
+      next(error);
     }
 };
+
 // export const logout = async (req, res) => {
 //     try {
 //         res.status(200).cookie('token', '', { maxAge: 0 }).json({

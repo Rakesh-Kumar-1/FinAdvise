@@ -52,6 +52,7 @@ const Advisor = () => {
         headers: {
           "Content-Type": "multipart/form-data",
         },
+        withCredentials: true,
       });
       alert("Submitted successfully");
       console.log(res.data.message);

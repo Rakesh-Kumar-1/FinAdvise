@@ -8,9 +8,9 @@ const AdvisorApprove = () => {
   const [advisors, setAdvisors] = useState([]);
   const [showIndex, setShowIndex] = useState(null);
 
-  const fetchDisapproved = async () => {
+    const fetchDisapproved = async () => {
     try {
-      const res = await axios.get('https://finadvise-backend.onrender.com/manager/disapprovelist');
+      const res = await axios.get('https://finadvise-backend.onrender.com/manager/disapprovelist', { withCredentials: true });
       setAdvisors(res.data.info);
     } catch (err) {
       console.log("Error fetching disapproved advisors:", err);
@@ -23,7 +23,7 @@ const AdvisorApprove = () => {
 
   const handleApprove = async (id) => {
     try {
-      const approve = await axios.post(`https://finadvise-backend.onrender.com/manager/approve/${id}`);
+  const approve = await axios.post(`https://finadvise-backend.onrender.com/manager/approve/${id}`, null, { withCredentials: true });
       if (approve.data.message === 'Advisor created successfully') {
         alert("Advisor approved successfully.");
         await fetchDisapproved();
@@ -37,7 +37,7 @@ const AdvisorApprove = () => {
 
   const handleReject = async (id) => {
     try {
-      const reject = await axios.post(`https://finadvise-backend.onrender.com/manager/reject/${id}`);
+  const reject = await axios.post(`https://finadvise-backend.onrender.com/manager/reject/${id}`, null, { withCredentials: true });
       if (reject.data.message === 'Advisor delete successfully') {
         alert("Advisor rejected.");
         await fetchDisapproved();

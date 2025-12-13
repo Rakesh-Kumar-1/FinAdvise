@@ -9,7 +9,7 @@ const Transcation = () => {
     useEffect(() => {
         const fetchManager = async () => {
             try {
-                const res = await axios.get(`https://finadvise-backend.onrender.com/admin/transcation/${name}`);
+                const res = await axios.get(`https://finadvise-backend.onrender.com/admin/transcation/${name}`, { withCredentials: true });
                 setTrans(res.data.info)
             } catch (err) {
                 console.log('Failed to fetch manager', err)

@@ -30,8 +30,8 @@ const AdvisorDeta = () => {
     try {
       setLoading(true);
       const [advisorRes, allAdvisorsRes] = await Promise.all([
-        axios.get(`https://finadvise-backend.onrender.com/user/advisor/${id}`),
-        axios.get('https://finadvise-backend.onrender.com/user/fetch-advisor')
+        axios.get(`https://finadvise-backend.onrender.com/user/advisor/${id}`, { withCredentials: true }),
+        axios.get('https://finadvise-backend.onrender.com/user/fetch-advisor', { withCredentials: true })
       ]);
       
       setAdvisor(advisorRes.data.info || advisorRes.data.info);
@@ -103,7 +103,7 @@ const AdvisorDeta = () => {
         transactionId,
         price: "501",
         method
-      });
+      }, { withCredentials: true });
 
       if (scheduleRes.data.message === 'Slot booked') {
         alert('Meeting scheduled successfully!');

@@ -12,6 +12,7 @@ import advisorRoute from './routes/advisorRoutes.js';
 import chatRoutes from './routes/chatRoute.js';
 import { fileURLToPath } from 'url';
 import { records } from './routes/records.js';
+import { isAuthenticated } from './middleware/isAuthenticated.js';
 import path from 'path';
 
 dotenv.config();
@@ -93,7 +94,7 @@ io.on('connection', (socket) => {
 import './middleware/restoreSlots.js';
 import { ChatRoom } from './models/chatroom.js';
 import { errorHandling } from './middleware/errorHandling.js';
-import { isAuthenticated } from './middleware/isAuthenticated.js';
+
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -110,13 +111,13 @@ const __dirname = path.dirname(__filename);
 app.use('/files', express.static(path.join(__dirname, 'files')));
 
 // Routes
-app.use(isAuthenticated);
+
 app.use('/user', userRoute);
-app.use('/admin', adminRoute);
-app.use('/manager', managerRoute);
-app.use('/advisor', advisorRoute);
+app.use('/admin',isAuthenticated, adminRoute);
+app.use('/manager',isAuthenticated, managerRoute);
+app.use('/advisor',isAuthenticated, advisorRoute);
 app.use('/chat', chatRoutes);
-app.use('/payment/records', records);
+app.use('/payment/records',isAuthenticated, records);
 app.use(errorHandling)
 
 // Start HTTP + WebSocket server

@@ -12,11 +12,13 @@ import fs from 'fs';
 import { validateWebhookSignature } from 'razorpay/dist/utils/razorpay-utils.js';
 import { zoomService } from '../controllers/zoomPath.js';
 import { mail } from '../controllers/mailsend.js';
+import { isAuthenticated } from '../middleware/isAuthenticated.js';
 const router = express.Router();
 
 router.post('/register', register);
 router.post('/login', login);
 // router.get('/logout', logout);
+router.use(isAuthenticated);
 router.post('/forgot-password',forgotPassword)
 router.get('/fetch-advisor',fetchAdvisors)
 router.get('/advisor/:id',details)

@@ -36,6 +36,7 @@ const CreateManager = () => {
         headers: {
           "Content-Type": "multipart/form-data",
         },
+        withCredentials: true,
       });
       alert(res.data.message);
       console.log(res.data);

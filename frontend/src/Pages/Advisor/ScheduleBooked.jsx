@@ -6,7 +6,7 @@ export const ScheduleBooked = ({ id }) => {
 
   const bookedschedule = async () => {
     try {
-      const bookedlist = await axios.get(`https://finadvise-backend.onrender.com/advisor/bookdschedule?id=${id}`);
+  const bookedlist = await axios.get(`https://finadvise-backend.onrender.com/advisor/bookdschedule?id=${id}`, { withCredentials: true });
       if (bookedlist.data.status === true) {
         setList(bookedlist.data.info);
       }

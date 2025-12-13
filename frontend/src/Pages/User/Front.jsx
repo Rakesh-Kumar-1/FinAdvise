@@ -267,7 +267,8 @@ const Front = () => {
           {
             id,
             user,
-          }
+          },
+          { withCredentials: true }
         );
 
         if (res.data.status === true) {
@@ -300,7 +301,8 @@ const Front = () => {
             subject,
             description,
             role: "user",
-          }
+          },
+          { withCredentials: true }
         );
 
         if (res.data.message === "Successfull") {
@@ -322,7 +324,7 @@ const Front = () => {
       try {
         setLoading(true);
         const response = await axios.get(
-          "https://finadvise-backend.onrender.com/user/fetch-advisor"
+          "https://finadvise-backend.onrender.com/user/fetch-advisor",{withCredentials: true}
         );
         setAdvisors(response.data.info);
         dispatch(addUser(response.data.info));

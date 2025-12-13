@@ -60,7 +60,11 @@ export default function Setting() {
   const [newPassword, setNewPassword] = useState("");
   const submitPassword = useCallback(async () => {
       try {
-        const response = await axios.post("https://finadvise-backend.onrender.com/user/changepassword",{newPassword,id:position._id}) 
+        const response = await axios.post(
+          "https://finadvise-backend.onrender.com/user/changepassword",
+          { newPassword, id: position._id },
+          { withCredentials: true }
+        );
         if (response.data.message === "Change Password Successfully") {
           alert("Successfully changed password");
           setNewPassword(""); // clear input after success

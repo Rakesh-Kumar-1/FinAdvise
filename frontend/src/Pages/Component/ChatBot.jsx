@@ -15,9 +15,13 @@ const ChatBot = () => {
 
     try {
       // Call backend
-      const res = await axios.post("https://finadvise-backend.onrender.com/chat/chatbot", {
-        message: input,
-      });
+      const res = await axios.post(
+        "https://finadvise-backend.onrender.com/chat/chatbot",
+        {
+          message: input,
+        },
+        { withCredentials: true }
+      );
 
       const botMsg = { text: res.data.answer, sender: "bot" };
       setMessages(prev => [...prev, botMsg]);

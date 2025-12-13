@@ -11,7 +11,7 @@ const ManagerInfo = () => {
     useEffect(()=> {
         const fetchManager = async() =>{
             try{
-                const res = await axios.get(`https://finadvise-backend.onrender.com/admin/managerinfo/${id}`);
+                const res = await axios.get(`https://finadvise-backend.onrender.com/admin/managerinfo/${id}`, { withCredentials: true });
                 setManager(res.data.info)
             }catch(err){
                 console.log('Failed to fetch manager',err)

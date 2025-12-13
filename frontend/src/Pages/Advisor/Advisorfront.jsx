@@ -74,7 +74,7 @@ const Advisorfront = () => {
       const res = await axios.post("https://finadvise-backend.onrender.com/advisor/schedule", {
         schedule,
         advisorId,
-      });
+      }, { withCredentials: true });
       if (res.data.message === "Schedule updated successfully") {
         setPosition(res.data.info);
         alert("Availability saved successfully!");
@@ -97,7 +97,8 @@ const Advisorfront = () => {
           subject,
           description,
           role: "advisor",
-        }
+        },
+        { withCredentials: true }
       );
 
       if (res.data.message === "Successfull") {

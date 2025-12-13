@@ -67,8 +67,12 @@ const ManagerProfile = () => {
     const fetchManagers = async () => {
       try {
         const [activeRes, inactiveRes] = await Promise.all([
-          axios.get("https://finadvise-backend.onrender.com/manager/fetch-active"),
-          axios.get("https://finadvise-backend.onrender.com/manager/fetch-inactive"),
+          axios.get("https://finadvise-backend.onrender.com/manager/fetch-active", {
+            withCredentials: true,
+          }),
+          axios.get("https://finadvise-backend.onrender.com/manager/fetch-inactive", {
+            withCredentials: true,
+          }),
         ]);
         setActive(activeRes.data.info);
         setInactive(inactiveRes.data.info);

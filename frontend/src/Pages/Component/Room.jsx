@@ -43,7 +43,8 @@ export const Room = () => {
     const fetchChatRooms = async () => {
       try {                                               // ChatSideBar
         const response = await axios.get(
-          `https://finadvise-backend.onrender.com/chat/chatroom?id=${positionId}&source=${source}`
+          `https://finadvise-backend.onrender.com/chat/chatroom?id=${positionId}&source=${source}`,
+          { withCredentials: true }
         );
         setPartner(response.data);
         setMessages([]);
@@ -61,7 +62,7 @@ export const Room = () => {
   // 📨 Fetch messages when chat selected
   const onSelectChat = async (chatRoomId, partnerId) => {
     try {
-      const res = await axios.get(`https://finadvise-backend.onrender.com/chat/messages/${chatRoomId}`);  //getMessageByRoom
+  const res = await axios.get(`https://finadvise-backend.onrender.com/chat/messages/${chatRoomId}`, { withCredentials: true });  //getMessageByRoom
       setMessages(res.data);
       setSelectedChat({ chatRoomId, partnerId });
 
@@ -90,7 +91,7 @@ export const Room = () => {
     };
 
     try {
-      await axios.post("https://finadvise-backend.onrender.com/chat/sendmessages", messageData);
+  await axios.post("https://finadvise-backend.onrender.com/chat/sendmessages", messageData, { withCredentials: true });
       socket.current.emit("send_message", messageData);
       setMessages((prev) => [...prev, messageData]);
       setNewMessage("");

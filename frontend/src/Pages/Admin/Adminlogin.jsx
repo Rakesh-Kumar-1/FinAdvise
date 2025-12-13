@@ -30,7 +30,7 @@ const AdminLogin = () => {
       }
 
       setLabel(newLabel);
-      const response = await axios.get(url);
+  const response = await axios.get(url, { withCredentials: true });
       setItems(response.data.info);
     } catch (error) {
       console.error(`Error fetching data for ${type}:`, error);
