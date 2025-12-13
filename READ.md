@@ -108,11 +108,13 @@ Create a `.env` file in the backend directory:
 
 ````env
 MONGO_URI
+PORT
 JWT_SECRET
 
 # Redis
 REDIS_HOST
 REDIS_PORT
+Redis_PASSWORD
 
 # RabbitMQ
 RABBITMQ_URL
@@ -124,6 +126,10 @@ EMAIL_PASS
 # Zoom
 ZOOM_API_KEY
 ZOOM_API_SECRET
+ZOOM_ACCOUNT_ID
+
+# GEMINI
+API_KEY (LLM) 
 ````
 
 ---
